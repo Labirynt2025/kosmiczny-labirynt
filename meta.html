@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        text-align: center;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        overflow-x: hidden;
+      }
+
+      #gwiazdy {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: white;
+        border-radius: 50%;
+        animation: fall linear;
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateY(-10vh);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(110vh);
+          opacity: 0;
+        }
+      }
+
+      h1 {
+        font-size: 1.8em;
+        margin-bottom: 0.2em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        z-index: 1;
+      }
+
+      h2 {
+        font-size: 1.6em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 1px 1px 0 #000;
+        z-index: 1;
+      }
+
+      #mainImage {
+        width: 100%;
+        max-width: 400px;
+        border-radius: 15px;
+        margin-bottom: 1.5em;
+        z-index: 1;
+      }
+
+      #teamName {
+        font-size: 1.5em;
+        color: #00d4ff;
+        margin-bottom: 1.2em;
+        text-shadow: 1px 1px 0 #000;
+        z-index: 1;
+      }
+
+      .statystyki {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6em;
+        width: 100%;
+        max-width: 360px;
+        margin-bottom: 2em;
+        font-size: 1.1em;
+        z-index: 1;
+      }
+
+      .stat {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.6em;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.4em 0.8em;
+        border-radius: 12px;
+      }
+
+      .stat img {
+        width: 26px;
+        height: 26px;
+        object-fit: contain;
+      }
+
+      .punkty {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #000;
+        background: #ffdd00;
+        padding: 0.8em 1em;
+        border-radius: 16px;
+        margin-top: 1.2em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6em;
+      }
+
+      .punkty img {
+        width: 30px;
+        height: 30px;
+      }
+
+      .info {
+        color: red;
+        font-size: 1em;
+        margin-top: 1em;
+        margin-bottom: 4em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="gwiazdy"></div>
+
+    <h1>🎉 GRATULACJE! 🎉</h1>
+    <h2>Gra ukończona!</h2>
+
+    <img
+      src="https://imgur.com/QAxCmWZ.png"
+      id="mainImage"
+      alt="Kosmiczny Labirynt"
+    />
+
+    <div id="teamName"></div>
+
+    <div class="statystyki">
+      <div class="stat">
+        <img src="https://imgur.com/tQiiQMG.png" /><span id="czas"
+          >00:00:00</span
+        >
+      </div>
+      <div class="stat">
+        <img src="https://imgur.com/749wK6u.png" /><span id="zlot">x 0</span>
+      </div>
+      <div class="stat">
+        <img src="https://imgur.com/puIYcyt.png" /><span id="sreb">x 0</span>
+      </div>
+      <div class="stat">
+        <img src="https://imgur.com/iOe97mY.png" /><span id="braz">x 0</span>
+      </div>
+      <div class="stat">
+        <img src="https://imgur.com/4IQLs8n.png" /><span id="kosmici"
+          >0 / 30</span
+        >
+      </div>
+      <div class="punkty">
+        <img src="https://imgur.com/Ne8pNjV.png" />
+        <span id="suma">Razem: 0 punktów</span>
+      </div>
+    </div>
+
+    <div class="info">📸 Zrób zrzut ekranu ze statystykami</div>
+
+    <script>
+      // Gwiazdki animacja
+      function createStar() {
+        const star = document.createElement("div");
+        star.className = "star";
+        star.style.left = Math.random() * 100 + "vw";
+        star.style.top = "-5vh";
+        star.style.animationDuration = 2 + Math.random() * 3 + "s";
+        star.style.animationDelay = Math.random() * 5 + "s";
+        document.getElementById("gwiazdy").appendChild(star);
+        setTimeout(() => star.remove(), 6000);
+      }
+      setInterval(createStar, 100);
+
+      function odmianaPunktow(liczba) {
+        const mod10 = liczba % 10;
+        const mod100 = liczba % 100;
+        if (liczba === 1) return "punkt";
+        if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100))
+          return "punkty";
+        return "punktów";
+      }
+
+      // Dane zespołu
+      const team = localStorage.getItem("team");
+      if (team) {
+        document.getElementById("teamName").textContent = team;
+      }
+
+      // Zegar
+      const start = parseInt(localStorage.getItem("startTime"));
+      if (start) {
+        const elapsed = Date.now() - start;
+        const h = String(Math.floor(elapsed / 3600000)).padStart(2, "0");
+        const m = String(Math.floor((elapsed % 3600000) / 60000)).padStart(
+          2,
+          "0"
+        );
+        const s = String(Math.floor((elapsed % 60000) / 1000)).padStart(2, "0");
+        document.getElementById("czas").textContent = `${h}:${m}:${s}`;
+      }
+
+      // Gwiazdki
+      let zlot = 0,
+        sreb = 0,
+        braz = 0;
+      for (let i = 1; i <= 16; i++) {
+        const typ = localStorage.getItem(`zad${i}gwiazdka`);
+        if (typ === "złota") zlot++;
+        else if (typ === "srebrna") sreb++;
+        else if (typ === "brązowa") braz++;
+      }
+      document.getElementById("zlot").textContent = `x ${zlot}`;
+      document.getElementById("sreb").textContent = `x ${sreb}`;
+      document.getElementById("braz").textContent = `x ${braz}`;
+      const punktyGw = zlot * 5 + sreb * 3 + braz * 1;
+
+      // Kosmici
+      let kosmici = 0;
+      for (let i = 1; i <= 30; i++) {
+        if (localStorage.getItem(`kosmita${i}`) === "1") kosmici++;
+      }
+      document.getElementById("kosmici").textContent = `${kosmici} / 30`;
+      const punktyKosmici = kosmici;
+
+      // Suma
+      const suma = punktyGw + punktyKosmici;
+      document.getElementById(
+        "suma"
+      ).textContent = `Razem: ${suma} ${odmianaPunktow(suma)}`;
+
+      // Reset postępu gry
+      setTimeout(() => {
+        localStorage.clear();
+        localStorage.setItem("gra_zakonczona", "1");
+      }, 500);
+    </script>
+  </body>
+</html>

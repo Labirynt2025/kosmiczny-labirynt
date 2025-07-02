@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.6em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        line-height: 1.3em;
+      }
+      .graphic {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 1.5em;
+      }
+      .overlay {
+        position: absolute;
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        z-index: 2;
+        top: 0;
+        left: 0;
+      }
+      .container {
+        position: relative;
+        width: 100%;
+        max-width: 360px;
+        margin-bottom: 1.5em;
+      }
+      .btn {
+        background: #1d3557;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        margin: 0.5em 0;
+        width: 100%;
+        max-width: 360px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+      .btn.green {
+        background: #28a745;
+        border-color: #28a745;
+      }
+      .btn.apply {
+        background: #1d3557;
+        border: 3px solid white;
+        color: white;
+        height: 58px;
+        padding: 0 1em;
+        max-width: 100px;
+        font-size: 0.95em;
+      }
+      .btn-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 360px;
+        margin-top: 0.5em;
+        gap: 1em;
+      }
+      .attempt-box {
+        background: #ffffff10;
+        padding: 0.8em;
+        border-radius: 10px;
+        border: 2px solid #ffffff30;
+        font-weight: bold;
+        width: 100%;
+        position: relative;
+        z-index: 2;
+        margin: 1.5em auto 1.5em;
+        max-width: 360px;
+      }
+      .input-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5em;
+        margin-top: 1em;
+        width: 100%;
+        max-width: 360px;
+      }
+      input[type="text"] {
+        padding: 0.9em;
+        border-radius: 20px;
+        border: 3px solid white;
+        font-size: 1.1em;
+        background-color: #102030;
+        color: white;
+        height: 58px;
+        flex-grow: 1;
+        max-width: 250px;
+      }
+      .error {
+        color: red;
+        margin-top: 1em;
+        font-weight: bold;
+        min-height: 1.4em;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .stars-info {
+        margin-bottom: 1.5em;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7em;
+      }
+      .star-line {
+        display: flex;
+        align-items: center;
+        gap: 0.7em;
+        font-size: 1em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Rozwiąż 3 rebusy<br />w jak najkrótszym czasie</h2>
+    <img
+      src="https://imgur.com/3HRv83S.png"
+      alt="Nowa grafika"
+      class="graphic"
+    />
+    <div class="container">
+      <img
+        id="rebusImg"
+        src="https://imgur.com/0NspmL2.png"
+        alt="Rebus 1"
+        class="graphic"
+      />
+      <img
+        src="https://imgur.com/bgSVvVM.png"
+        alt="Okładka"
+        id="overlayImg"
+        class="overlay"
+      />
+    </div>
+    <div class="input-group">
+      <input type="text" id="odpowiedz" placeholder="Wpisz odpowiedź" />
+      <button class="btn apply" id="zastosujBtn" disabled>Zatwierdź</button>
+    </div>
+    <div id="komunikat" class="error">&nbsp;</div>
+    <div class="btn-row">
+      <button class="btn green" id="startBtn">Start</button>
+      <div class="attempt-box">Czas: <span id="czas">00:00</span></div>
+      <div class="stars-info">
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg?v=1747875423355"
+            alt="Złota"
+          />
+          <span>- 0 - 30 sekund</span>
+        </div>
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg?v=1747875426320"
+            alt="Srebrna"
+          />
+          <span>- 31 - 45 sekund</span>
+        </div>
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg?v=1747875427751"
+            alt="Brązowa"
+          />
+          <span>- 46+ sekund</span>
+        </div>
+      </div>
+      <button class="btn" onclick="location.href='z-9ykvb-31.html'">
+        ⬅ Powrót
+      </button>
+    </div>
+
+    <script>
+      let startTime, timerInterval;
+      let etap = parseInt(localStorage.getItem("rebusEtap")) || 1;
+      let startTimestamp = parseInt(localStorage.getItem("rebusStartTime"));
+
+      const input = document.getElementById("odpowiedz");
+      const zastosujBtn = document.getElementById("zastosujBtn");
+      const overlayImg = document.getElementById("overlayImg");
+      const komunikat = document.getElementById("komunikat");
+      const rebusImg = document.getElementById("rebusImg");
+      const czasSpan = document.getElementById("czas");
+
+      function ustawRebus(etap) {
+        if (etap === 2) rebusImg.src = "https://imgur.com/28FKIjv.png";
+        if (etap === 3) rebusImg.src = "https://imgur.com/tUqlxWi.png";
+      }
+
+      function startTimer() {
+        if (timerInterval) return;
+        if (!startTimestamp) {
+          startTimestamp = Date.now();
+          localStorage.setItem("rebusStartTime", startTimestamp);
+        }
+        timerInterval = setInterval(() => {
+          const elapsed = Date.now() - startTimestamp;
+          const min = String(Math.floor(elapsed / 60000)).padStart(2, "0");
+          const sec = String(Math.floor((elapsed % 60000) / 1000)).padStart(
+            2,
+            "0"
+          );
+          czasSpan.textContent = `${min}:${sec}`;
+          localStorage.setItem("rebusElapsedFormatted", `${min}:${sec}`);
+        }, 500);
+      }
+
+      function initState() {
+        if (startTimestamp) {
+          overlayImg.style.display = "none";
+          ustawRebus(etap);
+          startTimer();
+        }
+      }
+
+      input.addEventListener("input", () => {
+        zastosujBtn.disabled = input.value.trim().length < 1;
+        komunikat.innerHTML = "&nbsp;";
+      });
+
+      document.getElementById("startBtn").onclick = () => {
+        overlayImg.style.display = "none";
+        startTimer();
+      };
+
+      zastosujBtn.onclick = () => {
+        const odp = input.value.trim().toLowerCase();
+        if (etap === 1 && odp === "droga mleczna") {
+          etap = 2;
+          localStorage.setItem("rebusEtap", etap);
+          komunikat.innerHTML = "&nbsp;";
+          input.value = "";
+          zastosujBtn.disabled = true;
+          ustawRebus(etap);
+        } else if (etap === 2 && odp === "meteoryt") {
+          etap = 3;
+          localStorage.setItem("rebusEtap", etap);
+          komunikat.innerHTML = "&nbsp;";
+          input.value = "";
+          zastosujBtn.disabled = true;
+          ustawRebus(etap);
+        } else if (etap === 3 && odp === "satelita") {
+          komunikat.innerHTML = "&nbsp;";
+          input.value = "";
+          zastosujBtn.disabled = true;
+          clearInterval(timerInterval);
+          localStorage.setItem("rebusElapsedTime", Date.now() - startTimestamp);
+          window.location.href = "z-fplq7-33.html";
+        } else {
+          komunikat.innerHTML = "❌ Niepoprawna odpowiedź";
+        }
+      };
+
+      initState();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        text-align: center;
+        padding: 4vh 1em 2em;
+      }
+      .content {
+        width: 100%;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      h1 {
+        font-size: 2em;
+        margin-bottom: 2em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        width: 100%;
+      }
+      .buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        margin-top: 4em;
+        width: 100%;
+        max-width: 360px;
+      }
+      .btn {
+        background: #1d3557;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        width: 100%;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+      .btn.green {
+        background: #28a745;
+        border-color: #28a745;
+      }
+      .hidden {
+        display: none !important;
+      }
+      #ciekawostkaSekcja {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+        max-width: 400px;
+      }
+      #ciekawostkaSekcja.active {
+        display: flex;
+      }
+      #ciekawostkaSekcja h1 {
+        font-size: 2em;
+        margin-bottom: 2em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        width: 100%;
+      }
+      #ciekawostkaBox {
+        margin-top: 4em;
+        display: flex;
+        flex-direction: column;
+        gap: 2em;
+        max-width: 360px;
+        width: 100%;
+      }
+      #ciekawostka {
+        font-size: 1.15em;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content" id="menu">
+      <h1>Wybierz opcję</h1>
+      <div class="buttons">
+        <button class="btn" id="btnZadanie">🚀 Zadanie</button>
+        <button class="btn" onclick="pokazCiekawostke()">💡 Ciekawostka</button>
+        <button
+          class="btn"
+          onclick="location.href='https://kosmiczny-labirynt-w-kukurydzy.glitch.me/start.html'"
+        >
+          ⬅ Powrót
+        </button>
+      </div>
+    </div>
+
+    <div class="content hidden" id="ciekawostkaSekcja">
+      <h1>Ciekawostka</h1>
+      <div id="ciekawostkaBox">
+        <p id="ciekawostka">
+          😢 W kosmosie nie da się płakać tak jak na Ziemi. Brak grawitacji
+          powoduje, że łzy nie spływają po policzkach. Zamiast tego tworzą się z
+          nich kulki, które unoszą się w powietrzu.
+        </p>
+        <button class="btn" onclick="powrotDoMenu()">⬅ Powrót</button>
+      </div>
+    </div>
+
+    <script>
+      function pokazCiekawostke() {
+        document.getElementById("menu").classList.add("hidden");
+        document.getElementById("ciekawostkaSekcja").classList.remove("hidden");
+        document.getElementById("ciekawostkaSekcja").classList.add("active");
+      }
+
+      function powrotDoMenu() {
+        document.getElementById("menu").classList.remove("hidden");
+        document.getElementById("ciekawostkaSekcja").classList.remove("active");
+        document.getElementById("ciekawostkaSekcja").classList.add("hidden");
+      }
+
+      const btnZadanie = document.getElementById("btnZadanie");
+      const status = localStorage.getItem("zad14status");
+
+      if (status === "odebrana") {
+        btnZadanie.textContent = "✅ Nagroda odebrana!";
+        btnZadanie.classList.add("green");
+        btnZadanie.onclick = function () {
+          location.href =
+            "https://kosmiczny-labirynt-w-kukurydzy.glitch.me/z-w3t6m-143.html";
+        };
+      } else {
+        btnZadanie.textContent = "🚀 Zadanie";
+        btnZadanie.onclick = function () {
+          location.href =
+            "https://kosmiczny-labirynt-w-kukurydzy.glitch.me/z-h9r2z-142.html";
+        };
+      }
+    </script>
+  </body>
+</html>

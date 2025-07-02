@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.6em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        line-height: 1.3em;
+      }
+      .graphic {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 1.5em;
+      }
+      .overlay {
+        position: absolute;
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        z-index: 2;
+        top: 0;
+        left: 0;
+      }
+      .container {
+        position: relative;
+        width: 100%;
+        max-width: 360px;
+        margin-bottom: 1.5em;
+      }
+      .btn {
+        background: #1d3557;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        width: 100%;
+        max-width: 360px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+      .btn.green {
+        background: #28a745;
+        border-color: #28a745;
+      }
+      .btn.apply {
+        height: 58px;
+        padding: 0 1em;
+        max-width: 100px;
+        font-size: 0.95em;
+      }
+      .btn-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 360px;
+        margin-top: 0.5em;
+        gap: 1em;
+      }
+      .attempt-box {
+        background: #2a2e38;
+        padding: 0.8em;
+        border-radius: 15px;
+        border: 2px solid #50545f;
+        font-weight: bold;
+        width: 100%;
+        max-width: 360px;
+        position: relative;
+        z-index: 2;
+        margin: 1.5em auto;
+      }
+      .input-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5em;
+        margin: 1em 0;
+        width: 100%;
+        max-width: 360px;
+      }
+      input[type="text"] {
+        padding: 0.9em;
+        border-radius: 20px;
+        border: 3px solid white;
+        font-size: 1.1em;
+        background-color: #102030;
+        color: white;
+        height: 58px;
+        flex-grow: 1;
+      }
+      input:disabled {
+        opacity: 0.5;
+      }
+      .lista-odpowiedzi {
+        color: #00d4ff;
+        font-size: 1.2em;
+        margin: 1em 0;
+        list-style: none;
+        padding-left: 0;
+      }
+      .lista-odpowiedzi li {
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+      }
+      .lista-odpowiedzi li span {
+        flex-grow: 1;
+      }
+      .stars-info {
+        margin-bottom: 1.5em;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7em;
+      }
+      .star-line {
+        display: flex;
+        align-items: center;
+        gap: 0.7em;
+        font-size: 1em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+      .error {
+        color: red;
+        font-weight: bold;
+        margin-bottom: 1em;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Na górnym obrazku znajdź przedmioty,<br />których brakuje na dolnym</h2>
+    <img
+      src="https://imgur.com/2couogH.png"
+      alt="Obrazek główny"
+      class="graphic"
+    />
+    <div class="container">
+      <img
+        id="zadanieImg"
+        src="https://imgur.com/FbYA2Nc.png"
+        alt="Obrazek zadania"
+        class="graphic"
+      />
+      <img
+        id="overlayImg"
+        src="https://imgur.com/rl9f6uj.png"
+        alt="Okładka"
+        class="overlay"
+      />
+    </div>
+    <ul class="lista-odpowiedzi" id="lista">
+      <li><strong>1.</strong> <span>__________</span></li>
+      <li><strong>2.</strong> <span>__________</span></li>
+      <li><strong>3.</strong> <span>__________</span></li>
+      <li><strong>4.</strong> <span>__________</span></li>
+      <li><strong>5.</strong> <span>__________</span></li>
+      <li><strong>6.</strong> <span>__________</span></li>
+      <li><strong>7.</strong> <span>__________</span></li>
+      <li><strong>8.</strong> <span>__________</span></li>
+      <li><strong>9.</strong> <span>__________</span></li>
+      <li><strong>10.</strong> <span>__________</span></li>
+    </ul>
+    <div class="input-group">
+      <input
+        type="text"
+        id="odpowiedz"
+        placeholder="Wpisz odpowiedź"
+        disabled
+      />
+      <button class="btn apply" id="zatwierdz" disabled>Zatwierdź</button>
+    </div>
+    <div id="komunikat" class="error"></div>
+    <div class="btn-row">
+      <button class="btn green" id="startBtn">Start</button>
+      <div class="attempt-box">Czas: <span id="czas">02:00</span></div>
+      <div class="stars-info">
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg?v=1747875423355"
+            alt="Złota"
+          />
+          <span>- 9 - 10 przedmiotów</span>
+        </div>
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg?v=1747875426320"
+            alt="Srebrna"
+          />
+          <span>- 6 - 8 przedmiotów</span>
+        </div>
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg?v=1747875427751"
+            alt="Brązowa"
+          />
+          <span>- 0 - 5 przedmiotów</span>
+        </div>
+      </div>
+      <button class="btn" onclick="location.href='z-k8yrq-41.html'">
+        ⬅ Powrót
+      </button>
+    </div>
+    <script>
+      let startTime, timerInterval;
+      const czasSpan = document.getElementById("czas");
+      const overlayImg = document.getElementById("overlayImg");
+      const input = document.getElementById("odpowiedz");
+      const btnZatwierdz = document.getElementById("zatwierdz");
+      const komunikat = document.getElementById("komunikat");
+      const lista = document
+        .getElementById("lista")
+        .getElementsByTagName("span");
+      const startBtn = document.getElementById("startBtn");
+      const poprawne = [
+        "balon",
+        "slon",
+        "słoń",
+        "pizza",
+        "gitara",
+        "ksiezyc",
+        "księżyc",
+        "kubek",
+        "mlotek",
+        "młotek",
+        "marchewka",
+        "aparat",
+        "wieszak",
+      ];
+      let znalezione = JSON.parse(localStorage.getItem("znalezione")) || [];
+      let startTimestamp = localStorage.getItem("startTimestamp");
+      let timerStarted = false;
+
+      function updateLista() {
+        for (let i = 0; i < lista.length; i++) {
+          lista[i].textContent = znalezione[i]
+            ? `${znalezione[i]} ✅`
+            : "__________";
+        }
+      }
+      updateLista();
+
+      if (startTimestamp) {
+        overlayImg.style.display = "none";
+        input.disabled = false;
+        startCountdown();
+      }
+
+      startBtn.onclick = () => {
+        if (startBtn.textContent === "Start") {
+          overlayImg.style.display = "none";
+          input.disabled = false;
+          if (!timerStarted) {
+            localStorage.setItem("startTimestamp", Date.now());
+            startCountdown();
+            timerStarted = true;
+          }
+          startBtn.textContent = "Zatwierdź";
+        } else {
+          location.href = "z-dp39v-43.html";
+        }
+      };
+
+      input.addEventListener("input", () => {
+        btnZatwierdz.disabled = input.value.trim().length === 0;
+      });
+
+      btnZatwierdz.onclick = () => {
+        const odp = input.value.trim().toLowerCase();
+        if (poprawne.includes(odp) && !znalezione.includes(odp)) {
+          znalezione.push(odp);
+          localStorage.setItem("znalezione", JSON.stringify(znalezione));
+          updateLista();
+          komunikat.innerHTML = "&nbsp;";
+          input.value = "";
+          btnZatwierdz.disabled = true;
+        } else {
+          komunikat.textContent = "❌ Niepoprawna odpowiedź";
+        }
+      };
+
+      function startCountdown() {
+        const saved = parseInt(localStorage.getItem("startTimestamp"), 10);
+        function tick() {
+          const elapsed = Math.floor((Date.now() - saved) / 1000);
+          let remaining = 120 - elapsed;
+          if (remaining < 0) remaining = 0;
+          updateTime(remaining);
+          if (remaining <= 0) {
+            clearInterval(timerInterval);
+            location.href = "z-dp39v-43.html";
+          }
+        }
+        tick();
+        timerInterval = setInterval(tick, 1000);
+      }
+
+      function updateTime(seconds) {
+        const min = String(Math.floor(seconds / 60)).padStart(2, "0");
+        const sec = String(seconds % 60).padStart(2, "0");
+        czasSpan.textContent = `${min}:${sec}`;
+      }
+    </script>
+  </body>
+</html>

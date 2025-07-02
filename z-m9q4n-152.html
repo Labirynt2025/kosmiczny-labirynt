@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.8em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        line-height: 1.4em;
+      }
+      .graphic {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 1em;
+      }
+      .main-container {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 1em;
+        margin-top: 1em;
+      }
+      .main-box {
+        width: 190px;
+        height: 190px;
+        border: 3px solid #00d4ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #102030;
+        font-weight: bold;
+        font-size: 2.2em;
+        padding: 0.4em;
+        text-align: center;
+        line-height: 1.2em;
+        position: relative;
+      }
+      #mainImage {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .score {
+        width: 60px;
+        height: 60px;
+        border: 3px solid white;
+        border-radius: 10px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8em;
+      }
+      .success {
+        border-color: #28a745;
+        color: #28a745;
+      }
+      .fail {
+        border-color: white;
+        color: white;
+      }
+      .choices {
+        display: flex;
+        justify-content: center;
+        gap: 1em;
+        margin-top: 1em;
+      }
+      .choice {
+        width: 100px;
+        height: 100px;
+        border: 3px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .choice img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .choice.green {
+        border-color: limegreen;
+        box-shadow: 0 0 12px limegreen;
+      }
+      .choice.red {
+        border-color: red;
+        box-shadow: 0 0 12px red;
+      }
+      .btn-row {
+        display: flex;
+        justify-content: center;
+        gap: 1em;
+        margin-top: 1em;
+      }
+      .btn {
+        background: #1d3557;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        width: 160px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+      }
+      .btn.green {
+        background-color: #28a745;
+        border-color: #28a745;
+      }
+      .btn.red {
+        background-color: #dc3545;
+        border-color: #dc3545;
+      }
+      .round-box {
+        background: #2a2e38;
+        padding: 0.8em;
+        border-radius: 20px;
+        border: 2px solid #666;
+        font-weight: bold;
+        width: 340px;
+        margin-top: 1em;
+        text-align: center;
+        font-size: 1.1em;
+      }
+      .stars-info {
+        margin-top: 2em;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7em;
+      }
+      .star-line {
+        display: grid;
+        grid-template-columns: 28px auto;
+        align-items: center;
+        gap: 0.5em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+      .back {
+        background-color: #1d3557;
+        border-color: white;
+        margin-top: 2em;
+        width: 340px;
+      }
+      .error-message {
+        color: red;
+        margin-top: 0.8em;
+        font-weight: bold;
+        height: 1.5em;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Zapamiętaj i powtórz<br />5 sekwencji obrazków</h2>
+    <img src="https://imgur.com/PaEonQe.png" alt="Grafika" class="graphic" />
+    <div class="main-container">
+      <div class="score fail" id="roundLeft">5</div>
+      <div class="main-box" id="mainBox">
+        <img src="https://imgur.com/xUMlxxQ.png" id="mainImage" />
+      </div>
+      <div class="score success" id="successCount">0</div>
+    </div>
+    <div class="choices">
+      <div class="choice" data-id="1">
+        <img src="https://imgur.com/6HmPcMD.png" />
+      </div>
+      <div class="choice" data-id="2">
+        <img src="https://imgur.com/H6qHUJ6.png" />
+      </div>
+      <div class="choice" data-id="3">
+        <img src="https://imgur.com/eZwuMBW.png" />
+      </div>
+    </div>
+    <div class="error-message" id="messageBox"></div>
+    <div class="btn-row">
+      <button class="btn red" onclick="resetGame()">RESET</button>
+      <button class="btn green" id="nextButton" onclick="startRound()">
+        START
+      </button>
+    </div>
+    <div class="round-box" id="errorCount">Liczba prób: 0</div>
+    <div class="stars-info">
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg"
+          alt="Złota"
+        />
+        <span>- 0–3 błędy</span>
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg"
+          alt="Srebrna"
+        />
+        <span>- 4–8 błędów</span>
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg"
+          alt="Brązowa"
+        />
+        <span>- 9+ błędów</span>
+      </div>
+    </div>
+    <button class="btn back" onclick="location.href='z-u8k3v-151.html'">
+      ⬅ POWRÓT
+    </button>
+
+    <script>
+      const imageMap = {
+        1: "https://imgur.com/6HmPcMD.png",
+        2: "https://imgur.com/H6qHUJ6.png",
+        3: "https://imgur.com/eZwuMBW.png",
+      };
+      const roundLengths = [3, 4, 5, 6, 7];
+
+      let currentRound =
+        parseInt(localStorage.getItem("memory_currentRound")) || 0;
+      let successCount =
+        parseInt(localStorage.getItem("memory_successCount")) || 0;
+      let errorCount = parseInt(localStorage.getItem("memory_errorCount")) || 0;
+      let sequence = [];
+      let userIndex = 0;
+      let isDisplaying = false;
+
+      const mainBox = document.getElementById("mainBox");
+      const successDisplay = document.getElementById("successCount");
+      const errorDisplay = document.getElementById("errorCount");
+      const roundLeftDisplay = document.getElementById("roundLeft");
+      const messageBox = document.getElementById("messageBox");
+      const nextButton = document.getElementById("nextButton");
+
+      function saveState() {
+        localStorage.setItem("memory_currentRound", currentRound);
+        localStorage.setItem("memory_successCount", successCount);
+        localStorage.setItem("memory_errorCount", errorCount);
+      }
+
+      function resetGame() {
+        currentRound = 0;
+        successCount = 0;
+        errorCount = 0;
+        sequence = [];
+        userIndex = 0;
+        localStorage.removeItem("memory_currentRound");
+        localStorage.removeItem("memory_successCount");
+        localStorage.removeItem("memory_errorCount");
+        mainBox.innerHTML = `<img src="https://imgur.com/xUMlxxQ.png" id="mainImage" />`;
+        nextButton.textContent = "START";
+        nextButton.disabled = false;
+        messageBox.textContent = "";
+        messageBox.style.visibility = "hidden";
+        updateDisplays();
+      }
+
+      function updateDisplays() {
+        successDisplay.textContent = successCount;
+        errorDisplay.textContent = "Liczba prób: " + errorCount;
+        roundLeftDisplay.textContent = 5 - currentRound;
+      }
+
+      function startRound() {
+        if (isDisplaying || currentRound >= roundLengths.length) return;
+        messageBox.style.visibility = "hidden";
+        sequence = [];
+        userIndex = 0;
+        for (let i = 0; i < roundLengths[currentRound]; i++) {
+          sequence.push(Math.floor(Math.random() * 3) + 1);
+        }
+        isDisplaying = true;
+        showSequence(0);
+      }
+
+      function showSequence(i) {
+        if (i >= sequence.length) {
+          mainBox.innerHTML = "Powtórz<br>sekwencję";
+          isDisplaying = false;
+          return;
+        }
+        mainBox.innerHTML = `<img src="${
+          imageMap[sequence[i]]
+        }" id="mainImage" />`;
+        setTimeout(() => {
+          const img = document.getElementById("mainImage");
+          if (img) img.style.display = "none";
+          setTimeout(() => showSequence(i + 1), 300);
+        }, 1000);
+      }
+
+      document.querySelectorAll(".choice").forEach((choice) => {
+        choice.addEventListener("click", () => {
+          if (isDisplaying || sequence.length === 0) return;
+          const id = parseInt(choice.dataset.id);
+          if (id === sequence[userIndex]) {
+            choice.classList.add("green");
+            setTimeout(() => choice.classList.remove("green"), 500);
+            userIndex++;
+            if (userIndex === sequence.length) {
+              successCount++;
+              currentRound++;
+              saveState();
+              updateDisplays();
+              if (currentRound < roundLengths.length) {
+                nextButton.textContent = "RUNDA " + (currentRound + 1);
+                mainBox.innerHTML = `<img src="https://imgur.com/xUMlxxQ.png" id="mainImage" />`;
+              } else {
+                window.location.href = "z-x7f2z-153.html";
+              }
+              sequence = [];
+            }
+          } else {
+            choice.classList.add("red");
+            setTimeout(() => choice.classList.remove("red"), 500);
+            errorCount++;
+            userIndex = 0;
+            saveState();
+            updateDisplays();
+            messageBox.textContent = "❌ Niepoprawna kolejność";
+            messageBox.style.visibility = "visible";
+            setTimeout(() => showSequence(0), 1000);
+          }
+        });
+      });
+
+      updateDisplays();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        padding: 1.5em 1em 3em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 2.2em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        margin-bottom: 1.8em;
+      }
+
+      .content {
+        max-width: 640px;
+        font-size: 1em;
+        line-height: 1.8em;
+        text-align: justify;
+        padding: 0 1em;
+        text-shadow: 1px 1px 0 #000;
+      }
+
+      .content p {
+        margin-bottom: 2em;
+      }
+
+      .section-title {
+        display: inline-block;
+        font-size: 1.4em;
+        color: #00d4ff;
+        margin-bottom: 0.5em;
+      }
+
+      .btn {
+        display: block;
+        width: 90%;
+        max-width: 300px;
+        margin: 2em auto 0;
+        padding: 0.9em 1em;
+        font-size: 1.1em;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: white;
+        background: #1d3557;
+        border: 4px solid white;
+        border-radius: 20px;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+
+      @media (max-width: 600px) {
+        h1 {
+          font-size: 1.8em;
+        }
+
+        .content {
+          font-size: 0.95em;
+          padding: 0 0.5em;
+        }
+
+        .section-title {
+          font-size: 1.3em;
+        }
+
+        .btn {
+          font-size: 1em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ZASADY GRY</h1>
+    <div class="content">
+      <p>
+        <span class="section-title">🔰 Rozpoczęcie gry</span><br />
+        Aby rozpocząć grę, należy zeskanować kod QR umieszczony na karcie START.
+        Następnie, na ekranie powitalnym, należy wpisać imię lub nazwę drużyny i
+        zatwierdzić przyciskiem ROZPOCZNIJ GRĘ. Od tego momentu automatycznie
+        włącza się zegar, a wszystkie zdobywane punkty są zliczane na bieżąco.
+      </p>
+
+      <p>
+        <span class="section-title">📲 Skanowanie kodów QR</span><br />
+        Na całym terenie labiryntu rozmieszczone są specjalne karty z kodami QR.
+        Aby je odczytać, należy skorzystać z przycisku ZESKANUJ KOD QR,
+        dostępnego w głównym panelu gry.
+      </p>
+
+      <p>
+        <span class="section-title">🧩 Rodzaje kart w labiryncie</span><br />
+        W grze występują dwa typy kart QR, które można spotkać na trasie:<br />
+        🌟 16 Kart z Zadaniami – oznaczone numerami od 1 do 16<br />
+        👽 30 Kart z Kosmitami – z pozoru identyczne, ale każda z nich ukrywa
+        innego kosmicznego bohatera.
+      </p>
+
+      <p>
+        <span class="section-title">🌟 Karty Zadań</span><br />
+        W grze dostępnych jest 16 zadań: na wiedzę, pamięć, spostrzegawczość,
+        szybkość i logiczne myślenie. Za prawidłowe wykonanie zadania
+        przyznawana jest gwiazdka:<br />
+        🥇 Złota – 5 punktów<br />
+        🥈 Srebrna – 3 punkty<br />
+        🥉 Brązowa – 1 punkt (w zależności od czasu lub poprawności
+        odpowiedzi).<br />
+        Wszystkie zdobyte gwiazdki i ich wartość punktowa widoczne są w TABELI
+        PUNKTOWEJ, która na bieżąco śledzi postęp drużyny.
+      </p>
+
+      <p>
+        <span class="section-title">👽 Karty Kosmitów</span><br />
+        W całym labiryncie do znalezienia jest 30 różnych kosmitów, których
+        można odnaleźć dzięki kartom QR. Po zeskanowaniu kodu pojawia się imię
+        kosmity, a drużyna otrzymuje 1 punkt do ogólnego wyniku. Odnalezieni
+        kosmici automatycznie trafiają do KOLEKCJI KOSMITÓW, gdzie można
+        sprawdzać, kto już został odnaleziony.
+      </p>
+
+      <p>
+        <span class="section-title">🔭 Ciekawostki</span><br />
+        Każda karta z zadaniem zawiera dodatkowo kosmiczną ciekawostkę na temat
+        wszechświata, planet lub zjawisk kosmicznych. Ciekawostki można czytać
+        niezależnie od zadań i są one wyłącznie dodatkiem edukacyjnym do zabawy.
+      </p>
+
+      <p>
+        <span class="section-title">🏁 Zakończenie gry</span><br />
+        Aby zakończyć grę, należy zeskanować kod QR zamieszczony na karcie META,
+        znajdującej się na końcu trasy. Spowoduje to zatrzymanie czasu i
+        wyświetlenie końcowego wyniku, uwzględniającego ilość gwiazdek,
+        znalezionych kosmitów i sumę otrzymanych punktów.
+      </p>
+
+      <p>
+        <span class="section-title">♻️ Reset gry</span><br />
+        W panelu głównym znajduje się przycisk RESET GRY, którego kliknięcie
+        spowoduje całkowite wyzerowanie wszystkich postępów w grze, w tym czasu,
+        zdobytych gwiazdek, odnalezionych kosmitów oraz sumy punktów. Gra
+        zostanie przywrócona do stanu początkowego.
+      </p>
+    </div>
+
+    <button class="btn" onclick="window.location.href='start.html'">
+      ⬅ Powrót
+    </button>
+  </body>
+</html>

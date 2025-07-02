@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        text-align: center;
+        position: relative;
+      }
+      h2 {
+        font-size: 1.6em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        line-height: 1.3em;
+      }
+      .graphic {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 2em;
+      }
+      .question-area {
+        position: relative;
+        width: 100%;
+        max-width: 360px;
+        margin-bottom: 2em;
+        z-index: 1;
+        min-height: 280px;
+      }
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: url("https://imgur.com/bgSVvVM.png") center center / cover
+          no-repeat;
+        background-color: #000;
+        z-index: 10;
+        border-radius: 10px;
+      }
+      .question-box {
+        border: 2px solid white;
+        border-radius: 10px;
+        padding: 1em;
+        margin-bottom: 1em;
+        width: 100%;
+        height: 130px;
+        background-color: #102030;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        text-align: center;
+        padding-top: 1em;
+        overflow: auto;
+      }
+      .question-number {
+        color: #00d4ff;
+        margin-bottom: 0.4em;
+        font-size: 1.05em;
+      }
+      .question-text {
+        font-size: 1.05em;
+        line-height: 1.3em;
+      }
+      .answers {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1em;
+        width: 100%;
+      }
+      .answer-btn {
+        background: #1d3557;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        transition: 0.2s;
+      }
+      .answer-btn.selected {
+        background-color: orange;
+        border-color: orange;
+      }
+      .answer-btn.correct {
+        background-color: green;
+        border-color: green;
+      }
+      .answer-btn.incorrect {
+        background-color: red;
+        border-color: red;
+      }
+      .btn {
+        background: #1d3557;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        width: 100%;
+        max-width: 360px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+      .btn.green {
+        background: #28a745;
+        border-color: #28a745;
+      }
+      .btn-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 360px;
+        margin-top: 0.5em;
+        gap: 1em;
+      }
+      .attempt-box {
+        background: #2a2e38;
+        padding: 0.8em;
+        border-radius: 15px;
+        border: 2px solid #50545f;
+        font-weight: bold;
+        width: 100%;
+        max-width: 360px;
+        position: relative;
+        z-index: 2;
+        margin: 1.5em auto;
+      }
+      .stars-info {
+        margin-bottom: 1.5em;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7em;
+      }
+      .star-line {
+        display: flex;
+        align-items: center;
+        gap: 0.7em;
+        font-size: 1em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Odpowiedz na 5 pytań<br />bez żadnej pomyłki</h2>
+    <img
+      src="https://imgur.com/QADsyVp.png"
+      alt="Obrazek główny"
+      class="graphic"
+    />
+    <div class="question-area" id="questionArea">
+      <div id="overlay" class="overlay"></div>
+      <div class="question-box" id="question"></div>
+      <div class="answers" id="answers"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="zatwierdzBtn">Zatwierdź</button>
+      <button class="btn green" id="startBtn">Start</button>
+      <div class="attempt-box">Ilość błędów: <span id="errors">0</span></div>
+      <div class="stars-info">
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg?v=1747875423355"
+            alt="Złota"
+          /><span>- 1 błąd</span>
+        </div>
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg?v=1747875426320"
+            alt="Srebrna"
+          /><span>- 2 błędy</span>
+        </div>
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg?v=1747875427751"
+            alt="Brązowa"
+          /><span>- 3+ błędy</span>
+        </div>
+      </div>
+      <button class="btn" onclick="location.href='z-h3x9k-51.html'">
+        ⬅ Powrót
+      </button>
+    </div>
+
+    <script>
+      const questionBox = document.getElementById("question");
+      const answersBox = document.getElementById("answers");
+      const overlay = document.getElementById("overlay");
+      const errorsSpan = document.getElementById("errors");
+      const startBtn = document.getElementById("startBtn");
+      const zatwierdzBtn = document.getElementById("zatwierdzBtn");
+      let selected = null;
+
+      let errors = parseInt(localStorage.getItem("errors")) || 0;
+      let currentQuestion =
+        parseInt(localStorage.getItem("currentQuestion")) || 0;
+      const overlayHidden = localStorage.getItem("overlayHidden") === "true";
+
+      const questions = [
+        {
+          text: "Która planeta w Układzie Słonecznym ma największą liczbę księżyców?",
+          correct: "C",
+          answers: ["A. Mars", "B. Jowisz", "C. Saturn", "D. Uran"],
+        },
+        {
+          text: "Jak nazywa się jedyny naturalny satelita Ziemi?",
+          correct: "A",
+          answers: ["A. Księżyc", "B. Wenus", "C. Słońce", "D. Mars"],
+        },
+        {
+          text: "Który z tych pierwiastków dominuje w atmosferze Jowisza?",
+          correct: "B",
+          answers: ["A. Azot", "B. Wodór", "C. Tlen", "D. Hel"],
+        },
+        {
+          text: "Która planeta w Układzie Słonecznym obraca się najszybciej wokół własnej osi?",
+          correct: "A",
+          answers: ["A. Merkury", "B. Neptun", "C. Ziemia", "D. Wenus"],
+        },
+        {
+          text: "Co można zobaczyć na nocnym niebie jako jasny warkocz przelatujący po niebie?",
+          correct: "D",
+          answers: ["A. Wenus", "B. Saturn", "C. Pluton", "D. Kometa"],
+        },
+      ];
+
+      function loadQuestion() {
+        const q = questions[currentQuestion];
+        questionBox.innerHTML = `
+          <div class="question-number">Pytanie ${currentQuestion + 1}:</div>
+          <div class="question-text">${q.text}</div>
+        `;
+        answersBox.innerHTML = "";
+        q.answers.forEach((ans, i) => {
+          const btn = document.createElement("button");
+          btn.className = "answer-btn";
+          btn.dataset.id = String.fromCharCode(65 + i);
+          btn.textContent = ans;
+          btn.onclick = () => {
+            document
+              .querySelectorAll(".answer-btn")
+              .forEach((b) => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            selected = btn;
+          };
+          answersBox.appendChild(btn);
+        });
+
+        overlay.style.height =
+          document.getElementById("questionArea").offsetHeight + "px";
+        errorsSpan.textContent = errors;
+      }
+
+      zatwierdzBtn.addEventListener("click", () => {
+        if (!selected) return;
+        const correct = questions[currentQuestion].correct;
+        const isCorrect = selected.dataset.id === correct;
+        selected.classList.remove("selected");
+        selected.classList.add(isCorrect ? "correct" : "incorrect");
+
+        if (isCorrect) {
+          setTimeout(() => {
+            selected.classList.remove("correct");
+            currentQuestion++;
+            localStorage.setItem("currentQuestion", currentQuestion);
+            if (currentQuestion < questions.length) {
+              loadQuestion();
+              selected = null;
+            } else {
+              location.href = "z-l2m8w-53.html";
+            }
+          }, 1000);
+        } else {
+          errors++;
+          localStorage.setItem("errors", errors);
+          errorsSpan.textContent = errors;
+          setTimeout(() => {
+            selected.classList.remove("incorrect");
+            selected = null;
+          }, 1000);
+        }
+      });
+
+      startBtn.addEventListener("click", () => {
+        overlay.style.display = "none";
+        localStorage.setItem("overlayHidden", "true");
+      });
+
+      window.addEventListener("load", () => {
+        loadQuestion();
+        if (overlayHidden) overlay.style.display = "none";
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.6em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        line-height: 1.3em;
+      }
+      .graphic {
+        width: 90%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 1.5em;
+      }
+      .grid-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1.5em;
+        position: relative;
+        z-index: 1;
+        min-height: 340px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 70px);
+        grid-gap: 10px;
+        width: max-content;
+        position: relative;
+      }
+      .tile {
+        width: 70px;
+        height: 70px;
+        border-radius: 8px;
+        background-size: cover;
+        background-position: center;
+        filter: grayscale(1);
+        transition: filter 0.3s ease, transform 0.5s ease;
+        cursor: pointer;
+        background-image: url("https://imgur.com/xUMlxxQ.png");
+        position: absolute;
+      }
+      .tile.kolorowa {
+        filter: grayscale(0);
+      }
+      .btn {
+        background: #1d3557;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        margin: 0.5em 0;
+        width: 100%;
+        max-width: 360px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+      .btn.green {
+        background: #28a745;
+        border-color: #28a745;
+      }
+      .btn.red {
+        background: #e63946;
+        border-color: #e63946;
+      }
+      .btn-row {
+        display: flex;
+        gap: 1em;
+        justify-content: center;
+        max-width: 360px;
+        width: 100%;
+        margin-top: 1em;
+        position: relative;
+        z-index: 2;
+      }
+      .attempt-box {
+        background: #ffffff10;
+        padding: 0.8em;
+        border-radius: 10px;
+        border: 2px solid #ffffff30;
+        font-weight: bold;
+        margin: 1.5em auto 1em;
+        max-width: 360px;
+        width: 100%;
+        position: relative;
+        z-index: 2;
+      }
+      .stars-info {
+        margin-top: 1em;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7em;
+      }
+      .star-line {
+        display: flex;
+        align-items: center;
+        gap: 0.7em;
+        font-size: 1em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Znajdź wszystkie 8 par obrazków<br />w jak najkrótszym czasie</h2>
+    <img
+      src="https://imgur.com/ttbloGM.png"
+      alt="Nowa grafika"
+      class="graphic"
+    />
+    <div class="grid-wrapper">
+      <div class="grid" id="memoryGrid"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn red" id="resetBtn">Reset</button>
+      <button class="btn green" id="startBtn">Start</button>
+    </div>
+    <div class="attempt-box">Czas: <span id="czas">00:00</span></div>
+
+    <div class="stars-info">
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg?v=1747875423355"
+          alt="Złota"
+        />
+        - 0 - 40 sekund
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg?v=1747875426320"
+          alt="Srebrna"
+        />
+        - 41 - 55 sekund
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg?v=1747875427751"
+          alt="Brązowa"
+        />
+        - 56+ sekund
+      </div>
+    </div>
+
+    <div style="margin-top: 2em; max-width: 360px; width: 100%">
+      <button class="btn" onclick="location.href='z-93xlt-21.html'">
+        ⬅ Powrót
+      </button>
+    </div>
+
+    <script>
+      const images = [
+        "https://imgur.com/CiCA2G6.png",
+        "https://imgur.com/rzzvc89.png",
+        "https://imgur.com/UNMdgej.png",
+        "https://imgur.com/aLWUcAS.png",
+        "https://imgur.com/UMDs7rN.png",
+        "https://imgur.com/tNbHbY0.png",
+        "https://imgur.com/7zuQfNc.png",
+        "https://imgur.com/1bUdyPm.png",
+      ];
+
+      let startTime, timerInterval;
+      let tileImages = [],
+        firstTile = null,
+        lockBoard = false,
+        matchedPairs = 0;
+
+      document.getElementById("startBtn").onclick = startGame;
+      document.getElementById("resetBtn").onclick = resetuj;
+
+      function startTimer() {
+        if (timerInterval) return;
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const min = String(Math.floor(elapsed / 60000)).padStart(2, "0");
+          const sec = String(Math.floor((elapsed % 60000) / 1000)).padStart(
+            2,
+            "0"
+          );
+          document.getElementById("czas").textContent = `${min}:${sec}`;
+        }, 500);
+      }
+
+      function stopTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+
+        const elapsed = Date.now() - startTime;
+        const min = String(Math.floor(elapsed / 60000)).padStart(2, "0");
+        const sec = String(Math.floor((elapsed % 60000) / 1000)).padStart(
+          2,
+          "0"
+        );
+        const wynik = `${min}:${sec}`;
+        localStorage.setItem("zad2czas", wynik);
+      }
+
+      function resetuj() {
+        stopTimer();
+        document.getElementById("czas").textContent = "00:00";
+        document.getElementById("startBtn").disabled = false;
+        firstTile = null;
+        lockBoard = false;
+        matchedPairs = 0;
+
+        const grid = document.getElementById("memoryGrid");
+        const tiles = Array.from(grid.children);
+        const gridRect = grid.getBoundingClientRect();
+
+        tiles.forEach((tile) => {
+          const rect = tile.getBoundingClientRect();
+          const offsetX = rect.left - gridRect.left;
+          const offsetY = rect.top - gridRect.top;
+          tile.style.position = "absolute";
+          tile.style.left = `${offsetX}px`;
+          tile.style.top = `${offsetY}px`;
+        });
+
+        setTimeout(() => {
+          const centerX = (grid.clientWidth - 70) / 2;
+          const centerY = (grid.clientHeight - 70) / 2;
+          tiles.forEach((tile) => {
+            tile.style.transition = "all 0.5s ease";
+            tile.style.left = `${centerX}px`;
+            tile.style.top = `${centerY}px`;
+          });
+        }, 50);
+
+        setTimeout(() => {
+          grid.innerHTML = "";
+          createTiles();
+          assignImages();
+        }, 1000);
+      }
+
+      function startGame() {
+        startTimer();
+        assignImages();
+        document.getElementById("startBtn").disabled = true;
+        const tiles = document.querySelectorAll(".tile");
+        tiles.forEach((tile) => {
+          tile.classList.add("kolorowa");
+          tile.onclick = () => revealTile(tile);
+        });
+      }
+
+      function createTiles() {
+        const grid = document.getElementById("memoryGrid");
+        grid.innerHTML = "";
+        for (let i = 0; i < 16; i++) {
+          const tile = document.createElement("div");
+          tile.className = "tile";
+          tile.dataset.index = i;
+          tile.style.backgroundImage = "url(https://imgur.com/xUMlxxQ.png)";
+          tile.style.left = `${(i % 4) * 80}px`;
+          tile.style.top = `${Math.floor(i / 4) * 80}px`;
+          grid.appendChild(tile);
+        }
+      }
+
+      function assignImages() {
+        tileImages = [...images, ...images].sort(() => Math.random() - 0.5);
+        matchedPairs = 0;
+      }
+
+      function revealTile(tile) {
+        if (lockBoard || tile.classList.contains("revealed")) return;
+        const index = parseInt(tile.dataset.index);
+        tile.style.backgroundImage = `url(${tileImages[index]})`;
+        tile.classList.add("revealed");
+
+        if (!firstTile) {
+          firstTile = tile;
+        } else {
+          lockBoard = true;
+          const firstIndex = parseInt(firstTile.dataset.index);
+          if (tileImages[index] === tileImages[firstIndex]) {
+            matchedPairs++;
+            if (matchedPairs === 8) {
+              stopTimer();
+              setTimeout(() => {
+                window.location.href = "z-vg8zr-23.html";
+              }, 500);
+            }
+            firstTile = null;
+            lockBoard = false;
+          } else {
+            setTimeout(() => {
+              tile.style.backgroundImage = "url(https://imgur.com/xUMlxxQ.png)";
+              tile.classList.remove("revealed");
+              firstTile.style.backgroundImage =
+                "url(https://imgur.com/xUMlxxQ.png)";
+              firstTile.classList.remove("revealed");
+              firstTile = null;
+              lockBoard = false;
+            }, 1000);
+          }
+        }
+      }
+
+      createTiles();
+      assignImages();
+    </script>
+  </body>
+</html>

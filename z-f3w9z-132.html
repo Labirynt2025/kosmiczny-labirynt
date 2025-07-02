@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.6em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+      }
+      .graphic {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 1em;
+      }
+      #resultText {
+        font-size: 1.4em;
+        margin-bottom: 1em;
+        min-height: 1.5em;
+        font-weight: bold;
+      }
+      #resultText.green {
+        color: #00ff88;
+      }
+      #resultText.red {
+        color: #ff4444;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 4px;
+        margin-bottom: 1.5em;
+      }
+      .tile {
+        width: 58px;
+        height: 58px;
+        border: none;
+        padding: 0;
+        background: none;
+        cursor: pointer;
+      }
+      .tile img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 5px;
+      }
+      .scoreboard {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1em;
+        margin-bottom: 1.5em;
+        flex-wrap: wrap;
+      }
+      .score {
+        font-weight: bold;
+        padding: 0.4em 0.8em;
+        border: 2px solid white;
+        border-radius: 10px;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .score.green {
+        color: #00ff88;
+        font-size: 1em;
+        min-width: 80px;
+      }
+      .score.red {
+        color: #ff4444;
+        font-size: 1em;
+        min-width: 80px;
+      }
+      .score.blue {
+        color: #4fc3f7;
+        font-size: 1.1em;
+        min-width: 120px;
+      }
+      .btn {
+        background: #c0392b;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        margin: 0.5em 0;
+        width: 100%;
+        max-width: 360px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+      .btn.back {
+        background: #1e335d;
+        border: 3px solid white;
+        color: white;
+        border-radius: 20px;
+        padding: 1em 2em;
+        font-size: 1.1em;
+        font-weight: bold;
+        margin-top: 2em;
+      }
+      .attempt-box {
+        background: #ffffff10;
+        padding: 0.8em;
+        border-radius: 10px;
+        border: 2px solid #ffffff30;
+        font-weight: bold;
+        width: 100%;
+        max-width: 360px;
+        margin: 1em auto 1.5em;
+      }
+      .stars-info {
+        margin: 3em 0 1.5em;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7em;
+      }
+      .star-line {
+        display: flex;
+        align-items: center;
+        gap: 0.7em;
+        font-size: 1em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Zdobądź jak najwięcej punktów<br />odnajdując statki na planszy</h2>
+    <img src="https://i.imgur.com/flNDipM.png" class="graphic" />
+    <div id="resultText">&nbsp;</div>
+    <div class="grid" id="grid"></div>
+    <div class="scoreboard">
+      <div class="score green" id="statkiScore">0</div>
+      <div class="score blue">Punkty:&nbsp;<span id="punkty">0</span></div>
+      <div class="score red" id="kamienieScore">0</div>
+    </div>
+    <div class="attempt-box">Pozostało ruchów: <span id="ruchy">10</span></div>
+    <button class="btn" onclick="resetGame()">Reset</button>
+    <div class="stars-info">
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg?v=1747875423355"
+          alt="Złota"
+        />
+        <span>- 18 - 30 punktów</span>
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg?v=1747875426320"
+          alt="Srebrna"
+        />
+        <span>- 9 - 17 punktów</span>
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg?v=1747875427751"
+          alt="Brązowa"
+        />
+        <span>- -20 - 8 punktów</span>
+      </div>
+    </div>
+    <button class="btn back" onclick="location.href='z-n4t8x-131.html'">
+      ⬅ POWRÓT
+    </button>
+
+    <script>
+      const grid = document.getElementById("grid");
+      const statkiScore = document.getElementById("statkiScore");
+      const kamienieScore = document.getElementById("kamienieScore");
+      const punktySpan = document.getElementById("punkty");
+      const ruchySpan = document.getElementById("ruchy");
+      const resultText = document.getElementById("resultText");
+
+      const okladka = "https://i.imgur.com/xUMlxxQ.png";
+      const statek = "https://i.imgur.com/MuFE6fi.png";
+      const kamien = "https://i.imgur.com/vMFW4Iy.png";
+
+      let statki = parseInt(localStorage.getItem("statki") || 0);
+      let kamienie = parseInt(localStorage.getItem("kamienie") || 0);
+      let ruchy = parseInt(localStorage.getItem("ruchy") || 10);
+      let odkryte = JSON.parse(localStorage.getItem("odkryte") || "[]");
+      let grafiki = JSON.parse(localStorage.getItem("grafiki") || "null");
+
+      if (!grafiki) {
+        grafiki = [...Array(20).fill("statek"), ...Array(16).fill("kamien")];
+        grafiki.sort(() => Math.random() - 0.5);
+        localStorage.setItem("grafiki", JSON.stringify(grafiki));
+      }
+
+      function aktualizujLicznik() {
+        statkiScore.textContent = statki === 0 ? "0" : `+${statki}`;
+        kamienieScore.textContent = kamienie === 0 ? "0" : `-${kamienie}`;
+        punktySpan.textContent = `${statki - kamienie}`;
+        ruchySpan.textContent = ruchy;
+
+        // ⬇⬇⬇ KLUCZOWA LINIJA: zapis punktów
+        localStorage.setItem("kosmici_punkty", statki - kamienie);
+      }
+
+      function resetGame() {
+        localStorage.removeItem("statki");
+        localStorage.removeItem("kamienie");
+        localStorage.removeItem("ruchy");
+        localStorage.removeItem("odkryte");
+        localStorage.removeItem("grafiki");
+        location.reload();
+      }
+
+      grafiki.forEach((typ, i) => {
+        const btn = document.createElement("button");
+        btn.className = "tile";
+        const img = document.createElement("img");
+        btn.appendChild(img);
+        grid.appendChild(btn);
+
+        if (odkryte.includes(i)) {
+          img.src = typ === "statek" ? statek : kamien;
+          btn.clicked = true;
+        } else {
+          img.src = okladka;
+        }
+
+        btn.onclick = () => {
+          if (btn.clicked || ruchy <= 0) return;
+          btn.clicked = true;
+          odkryte.push(i);
+          ruchy--;
+          if (typ === "statek") {
+            statki += 3;
+            resultText.textContent = "Trafiony!";
+            resultText.className = "green";
+            img.src = statek;
+          } else {
+            kamienie += 2;
+            resultText.textContent = "Pudło!";
+            resultText.className = "red";
+            img.src = kamien;
+          }
+          aktualizujLicznik();
+          localStorage.setItem("statki", statki);
+          localStorage.setItem("kamienie", kamienie);
+          localStorage.setItem("ruchy", ruchy);
+          localStorage.setItem("odkryte", JSON.stringify(odkryte));
+
+          if (ruchy === 0) {
+            setTimeout(() => {
+              window.location.href = "z-l2g6k-133.html";
+            }, 1000);
+          }
+        };
+      });
+
+      aktualizujLicznik();
+    </script>
+  </body>
+</html>

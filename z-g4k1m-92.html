@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.6em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+      }
+      .graphic {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 1em;
+        position: relative;
+      }
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        z-index: 2;
+      }
+      .graphic-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 360px;
+      }
+      .input-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        width: 100%;
+        max-width: 360px;
+        margin: 1em 0;
+      }
+      .input-group input {
+        padding: 0.9em;
+        border-radius: 20px;
+        border: 3px solid white;
+        font-size: 1.1em;
+        background-color: #102030;
+        color: white;
+        height: 58px;
+        width: 70%;
+      }
+      .input-group button {
+        height: 58px;
+        padding: 0 0.8em;
+        border-radius: 20px;
+        border: 3px solid white;
+        background-color: #1d3557;
+        color: white;
+        font-weight: bold;
+        font-size: 0.85em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        width: 30%;
+        white-space: nowrap;
+      }
+      .input-group button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn {
+        height: 58px;
+        padding: 0 1em;
+        border-radius: 20px;
+        border: 3px solid white;
+        background-color: #1d3557;
+        color: white;
+        font-weight: bold;
+        font-size: 1.1em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        width: 100%;
+        max-width: 360px;
+        margin: 0.5em 0;
+      }
+      .btn.green {
+        background-color: #28a745;
+        border-color: #28a745;
+      }
+      .btn.back {
+        background-color: #1d3557;
+        border-color: white;
+        margin-top: 2em;
+      }
+      .error-message {
+        color: #ff4d4d;
+        font-weight: bold;
+        min-height: 1.5em;
+        margin-bottom: 1em;
+      }
+      .attempt-box {
+        background: #2a2e38;
+        padding: 0.8em;
+        border-radius: 20px;
+        border: 2px solid #666;
+        font-weight: bold;
+        width: 100%;
+        max-width: 360px;
+        margin-top: 1em;
+      }
+      .stars-info {
+        margin-top: 2em;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7em;
+      }
+      .star-line {
+        display: flex;
+        align-items: center;
+        gap: 0.7em;
+        font-size: 1em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Znajdź prawidłową drogę<br />w poniższym labiryncie</h2>
+
+    <img
+      src="https://imgur.com/wypwDp3.png"
+      alt="Labirynt główny"
+      class="graphic"
+    />
+
+    <div class="graphic-wrapper">
+      <img
+        src="https://imgur.com/atRIoQL.png"
+        alt="Zadanie"
+        class="graphic"
+        id="zadanie"
+      />
+      <img
+        src="https://imgur.com/V42MWVz.png"
+        alt="Okładka"
+        class="overlay"
+        id="okladka"
+      />
+    </div>
+
+    <div class="input-group">
+      <input
+        type="text"
+        id="mainAnswer"
+        placeholder="Wpisz odpowiedź"
+        oninput="enableSubmit()"
+      />
+      <button id="mainBtn" onclick="checkMainAnswer()" disabled>
+        ZATWIERDŹ
+      </button>
+    </div>
+
+    <div id="errorMsg" class="error-message"></div>
+
+    <button class="btn green" onclick="startGame()">START</button>
+
+    <div class="attempt-box" id="attemptBox">Ilość prób: 0</div>
+
+    <div class="stars-info">
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg?v=1747875423355"
+          alt="Złota"
+        />
+        <span>- 1 próba</span>
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg?v=1747875426320"
+          alt="Srebrna"
+        />
+        <span>- 2 próby</span>
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg?v=1747875427751"
+          alt="Brązowa"
+        />
+        <span>- 3+ próby</span>
+      </div>
+    </div>
+
+    <button class="btn back" onclick="location.href='z-x7n2v-91.html'">
+      ⬅ POWRÓT
+    </button>
+
+    <script>
+      let attempts = parseInt(localStorage.getItem("zad9proby")) || 0;
+      const attemptBox = document.getElementById("attemptBox");
+      const okladka = document.getElementById("okladka");
+      const errorMsg = document.getElementById("errorMsg");
+
+      // Przywrócenie stanu
+      if (localStorage.getItem("zad9okladkaZniknela") === "true") {
+        okladka.style.display = "none";
+      }
+      attemptBox.textContent = "Ilość prób: " + attempts;
+
+      function enableSubmit() {
+        const val = document.getElementById("mainAnswer").value;
+        document.getElementById("mainBtn").disabled = val.trim().length === 0;
+      }
+
+      function startGame() {
+        okladka.style.display = "none";
+        localStorage.setItem("zad9okladkaZniknela", "true");
+      }
+
+      function checkMainAnswer() {
+        const val = document
+          .getElementById("mainAnswer")
+          .value.trim()
+          .toUpperCase();
+        attempts++;
+        localStorage.setItem("zad9proby", attempts);
+        attemptBox.textContent = "Ilość prób: " + attempts;
+
+        if (val === "D") {
+          window.location.href = "z-p8r3q-93.html";
+        } else {
+          errorMsg.textContent = "❌ Niepoprawna odpowiedź";
+        }
+      }
+    </script>
+  </body>
+</html>

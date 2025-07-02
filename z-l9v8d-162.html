@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        padding: 2em 1em 6em;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      h2 {
+        font-size: 1.6em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        line-height: 1.3em;
+      }
+      .graphic {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 1.5em;
+      }
+      .columns {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3em;
+        margin-bottom: 1em;
+        width: 100%;
+        max-width: 360px;
+      }
+      .alien-block {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        width: 100%;
+      }
+      .alien-block img {
+        width: 60px;
+        border-radius: 8px;
+      }
+      .alien-block input {
+        flex: 1;
+        padding: 0.5em;
+        border-radius: 10px;
+        border: 2px solid white;
+        background: #102030;
+        color: white;
+        transition: none;
+      }
+      .alien-block input.correct {
+        border-color: #28a745;
+      }
+      .alien-block button {
+        background: white;
+        border: none;
+        color: #1d3557;
+        font-size: 1.2em;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .alien-block button.correct {
+        background-color: #28a745;
+        color: white;
+      }
+      .alien-block button.incorrect {
+        background-color: #c0392b;
+        color: white;
+      }
+      .btn {
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        margin: 0.5em auto;
+        width: 100%;
+        max-width: 360px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+      .btn.blue {
+        background: #1d3557;
+        border-color: white;
+      }
+      .btn.red {
+        background: #c0392b;
+        border-color: white;
+      }
+      .attempt-box {
+        background: #ffffff10;
+        padding: 0.8em;
+        border-radius: 10px;
+        border: 2px solid #ffffff30;
+        font-weight: bold;
+        width: 100%;
+        max-width: 360px;
+        margin: 1em auto 2em;
+      }
+      .stars-info {
+        margin-bottom: 1.5em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4em;
+      }
+      .star-line {
+        display: flex;
+        align-items: center;
+        gap: 0.7em;
+        font-size: 1em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+      #komunikat {
+        min-height: 2em;
+        color: red;
+        font-weight: bold;
+        margin-bottom: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Napisz imiona wszystkich<br />kosmitów poniżej</h2>
+    <img src="https://imgur.com/7X6vkmw.png" alt="Grafika" class="graphic" />
+    <div class="columns" id="alienRows"></div>
+    <div id="komunikat">&nbsp;</div>
+    <button
+      class="btn blue"
+      onclick="location.href='kolekcja.html?source=zadanie'"
+    >
+      👽 Kolekcja kosmitów
+    </button>
+    <button class="btn red" onclick="location.href='z-q2m5x-163.html'">
+      Zatwierdź
+    </button>
+    <div class="attempt-box">
+      Liczba poprawnych imion: <span id="correctCount">0</span>
+    </div>
+    <div class="stars-info">
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg"
+          alt="Złota"
+        />
+        <span>- 9-10 imion kosmitów</span>
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg"
+          alt="Srebrna"
+        />
+        <span>- 6-8 imion kosmitów</span>
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg"
+          alt="Brązowa"
+        />
+        <span>- 0-5 imion kosmitów</span>
+      </div>
+    </div>
+    <button class="btn blue" onclick="location.href='z-f7k3n-161.html'">
+      ⬅ Powrót
+    </button>
+    <script>
+      const allAliens = [
+        { src: "https://imgur.com/paS5y88.png", name: "Zyzol" },
+        { src: "https://imgur.com/QtCRK7W.png", name: "Astro" },
+        { src: "https://imgur.com/kS5sedZ.png", name: "Moli" },
+        { src: "https://imgur.com/jQhWFpG.png", name: "Kinia" },
+        { src: "https://imgur.com/zjLR4DC.png", name: "Rumpel" },
+        { src: "https://imgur.com/70tBYXN.png", name: "Tina" },
+        { src: "https://imgur.com/9Ul3EnF.png", name: "Luna" },
+        { src: "https://imgur.com/sqmyt6P.png", name: "Gutek" },
+        { src: "https://imgur.com/O7dRIdU.png", name: "Orbitek" },
+        { src: "https://imgur.com/gcurIbK.png", name: "Pimpek" },
+      ];
+
+      let shuffled = JSON.parse(localStorage.getItem("alien_shuffled"));
+      if (!shuffled) {
+        shuffled = allAliens.sort(() => 0.5 - Math.random()).slice(0, 10);
+        localStorage.setItem("alien_shuffled", JSON.stringify(shuffled));
+      }
+
+      const savedAliens =
+        JSON.parse(localStorage.getItem("alien_solved")) || [];
+      let correctCount =
+        parseInt(localStorage.getItem("alien_correct")) || savedAliens.length;
+      document.getElementById("correctCount").textContent = correctCount;
+
+      const alienRows = document.getElementById("alienRows");
+      const komunikat = document.getElementById("komunikat");
+
+      function saveState() {
+        localStorage.setItem("alien_correct", correctCount);
+        localStorage.setItem("alien_solved", JSON.stringify(savedAliens));
+      }
+
+      function renderAliens(list) {
+        alienRows.innerHTML = "";
+        list.forEach(({ src, name }, index) => {
+          const div = document.createElement("div");
+          div.className = "alien-block";
+          const isSolved = savedAliens.includes(name);
+          div.innerHTML = `
+            <img src="${src}" />
+            <input type="text" id="input${index}" value="${
+            isSolved ? name : ""
+          }" ${isSolved ? "disabled" : ""} class="${
+            isSolved ? "correct" : ""
+          }" />
+            <button id="btn${index}" class="${
+            isSolved ? "correct" : "arrow"
+          }" ${isSolved ? "disabled" : ""}>${isSolved ? "✔" : "➤"}</button>
+          `;
+          if (isSolved) alienRows.prepend(div);
+          else alienRows.appendChild(div);
+
+          if (!isSolved) {
+            const input = div.querySelector("input");
+            const button = div.querySelector("button");
+
+            button.addEventListener("click", () => {
+              const wpisane = input.value.trim();
+              if (wpisane.toLowerCase() === name.toLowerCase()) {
+                button.textContent = "✔";
+                button.classList.remove("arrow");
+                button.classList.add("correct");
+                button.disabled = true;
+                input.disabled = true;
+                input.classList.add("correct");
+                correctCount++;
+                localStorage.setItem("imionakosmitow", correctCount); // ← DODANE
+                savedAliens.push(name);
+                saveState();
+                document.getElementById("correctCount").textContent =
+                  correctCount;
+                komunikat.innerHTML = "&nbsp;";
+                renderAliens(shuffled);
+              } else {
+                button.textContent = "✖";
+                button.classList.remove("arrow");
+                button.classList.add("incorrect");
+                komunikat.textContent = "❌ Niepoprawna odpowiedź";
+                input.value = "";
+              }
+            });
+          }
+        });
+      }
+
+      renderAliens(shuffled);
+    </script>
+  </body>
+</html>

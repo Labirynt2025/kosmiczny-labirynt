@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+  if (localStorage.getItem("gra_zakonczona") === "1") {
+    window.location.href = "start.html";
+  }
+</script>
+    <meta charset="UTF-8" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        text-align: center;
+        min-height: 100vh;
+        padding: 2em 1em;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      h1 {
+        font-size: 2em;
+        margin-bottom: 1.5em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(6, auto);
+        gap: 0.6em;
+        justify-items: center;
+        max-width: 700px;
+        margin: 0 auto 2em;
+      }
+
+      .slot {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .alien {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        object-fit: contain;
+        transition: filter 0.3s ease, opacity 0.3s ease;
+        filter: grayscale(100%);
+        opacity: 0.7;
+      }
+
+      .alien.zdobyty {
+        filter: none;
+        opacity: 1;
+      }
+
+      .name {
+        margin-top: 0.3em;
+        font-size: 0.9em;
+        visibility: hidden;
+      }
+
+      .name.widoczny {
+        visibility: visible;
+      }
+
+      .btn {
+        display: block;
+        width: 90%;
+        max-width: 300px;
+        margin: 2em auto 0;
+        padding: 1em;
+        font-size: 1.2em;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: white;
+        background: #1d3557;
+        border: 4px solid white;
+        border-radius: 20px;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+
+      @media (min-width: 600px) {
+        .alien {
+          width: 70px;
+          height: 70px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Kolekcja kosmitów</h1>
+
+    <div class="grid" id="kolekcja"></div>
+
+    <button class="btn" id="powrot">⬅ Powrót</button>
+
+    <script>
+      const grid = document.getElementById("kolekcja");
+
+      const grafiki = [
+        "https://imgur.com/paS5y88.png",
+        "https://imgur.com/QtCRK7W.png",
+        "https://imgur.com/kS5sedZ.png",
+        "https://imgur.com/jQhWFpG.png",
+        "https://imgur.com/zjLR4DC.png",
+        "https://imgur.com/70tBYXN.png",
+        "https://imgur.com/9Ul3EnF.png",
+        "https://imgur.com/sqmyt6P.png",
+        "https://imgur.com/O7dRIdU.png",
+        "https://imgur.com/gcurIbK.png",
+        "https://imgur.com/ZiHdxWp.png",
+        "https://imgur.com/QoIq7cT.png",
+        "https://imgur.com/Dn0UHy6.png",
+        "https://imgur.com/gljOXFD.png",
+        "https://imgur.com/eMxINBJ.png",
+        "https://imgur.com/IULPsIf.png",
+        "https://imgur.com/PNTRZnE.png",
+        "https://imgur.com/f7OgaN9.png",
+        "https://imgur.com/aopQcAb.png",
+        "https://imgur.com/1pQpd5q.png",
+        "https://imgur.com/96OMV8N.png",
+        "https://imgur.com/An2IyfV.png",
+        "https://imgur.com/63O1XqH.png",
+        "https://imgur.com/GqSc1kg.png",
+        "https://imgur.com/7nh33jD.png",
+        "https://imgur.com/gHsaiGN.png",
+        "https://imgur.com/zB2p6o2.png",
+        "https://imgur.com/1Efi12w.png",
+        "https://imgur.com/34XRtn7.png",
+        "https://imgur.com/DlQKRPw.png",
+      ];
+
+      for (let i = 1; i <= 30; i++) {
+        const zdobyty = localStorage.getItem("kosmita" + i) === "1";
+        const obejrzany = localStorage.getItem("obejrzany" + i);
+        const imie = (
+          localStorage.getItem("kosmita" + i + "name") || ""
+        ).toUpperCase();
+        const grafika = grafiki[i - 1];
+
+        const slot = document.createElement("div");
+        slot.className = "slot";
+
+        const img = document.createElement("img");
+        img.src = grafika;
+        img.alt = imie || "Nieodkryty kosmita";
+        img.className = "alien";
+        if (zdobyty) img.classList.add("zdobyty");
+
+        const label = document.createElement("div");
+        label.className = "name";
+        label.textContent = imie;
+        if (zdobyty) label.classList.add("widoczny");
+
+        slot.appendChild(img);
+        slot.appendChild(label);
+        grid.appendChild(slot);
+
+        if (zdobyty && obejrzany !== "1") {
+          localStorage.setItem("obejrzany" + i, "1");
+        }
+      }
+
+      localStorage.setItem("nowiKosmici", "0");
+
+      function resetScrollAndReturn() {
+        window.scrollTo(0, 0);
+        const params = new URLSearchParams(window.location.search);
+        const source = params.get("source");
+        if (source === "zadanie") {
+          window.location.replace("z-l9v8d-162.html");
+        } else {
+          window.location.replace("start.html");
+        }
+      }
+
+      document.getElementById("powrot").onclick = resetScrollAndReturn;
+    </script>
+  </body>
+</html>

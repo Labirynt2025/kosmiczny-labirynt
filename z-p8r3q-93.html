@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        text-align: center;
+        padding: 4vh 1em 2em;
+      }
+      .content {
+        width: 100%;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      h1 {
+        font-size: 2em;
+        margin-bottom: 0.5em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+      }
+      h2 {
+        font-size: 1.4em;
+        margin-bottom: 2em;
+      }
+      #gwiazdkaImg {
+        max-width: 180px;
+        filter: grayscale(100%);
+        margin-bottom: 1em;
+        transition: filter 0.3s ease;
+      }
+      #gwiazdkaImg.kolorowa {
+        filter: none;
+        animation: pulseGlow 2.5s ease-in-out infinite;
+      }
+      @keyframes pulseGlow {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 10px var(--glow-color))
+            drop-shadow(0 0 20px var(--glow-color));
+        }
+        50% {
+          filter: drop-shadow(0 0 25px var(--glow-color))
+            drop-shadow(0 0 45px var(--glow-color));
+        }
+      }
+      #napisNagrody {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: gold;
+        margin-bottom: 1.5em;
+        min-height: 1.5em;
+        visibility: hidden;
+      }
+      .btn {
+        background: #1d3557;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        width: 100%;
+        max-width: 360px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        margin-bottom: 1em;
+      }
+      .btn.green {
+        background: #28a745;
+        border-color: #28a745;
+      }
+      #btnPowrot {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <h1>Gratulacje!</h1>
+      <h2>To prawidłowa odpowiedź!</h2>
+      <img id="gwiazdkaImg" src="" alt="Gwiazdka" />
+      <div id="napisNagrody"></div>
+      <button class="btn" id="btnNagroda" onclick="pokazNagrode()">
+        🏅 Nagroda
+      </button>
+      <button class="btn" id="btnPowrot" onclick="wrocDoZadania()">
+        ⬅ Powrót
+      </button>
+    </div>
+
+    <script>
+      const img = document.getElementById("gwiazdkaImg");
+      const btn = document.getElementById("btnNagroda");
+      const napis = document.getElementById("napisNagrody");
+      const btnPowrot = document.getElementById("btnPowrot");
+
+      const zdobyta = localStorage.getItem("zad9zdobyta") === "true";
+      const proby = parseInt(localStorage.getItem("zad9proby") || "0");
+
+      let typ = "brązowa";
+      let kolor = "#cd7f32";
+      let tekst = "Otrzymujesz brązową gwiazdkę!";
+      let link =
+        "https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg?v=1747875427751";
+      let glow = "rgba(205, 127, 50, 0.7)";
+
+      if (proby === 1) {
+        typ = "złota";
+        kolor = "gold";
+        tekst = "Otrzymujesz złotą gwiazdkę!";
+        link =
+          "https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg?v=1747875423355";
+        glow = "rgba(255, 215, 0, 0.7)";
+      } else if (proby === 2) {
+        typ = "srebrna";
+        kolor = "silver";
+        tekst = "Otrzymujesz srebrną gwiazdkę!";
+        link =
+          "https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg?v=1747875426320";
+        glow = "rgba(192, 192, 192, 0.7)";
+      }
+
+      img.src = link;
+      document.documentElement.style.setProperty("--glow-color", glow);
+      localStorage.setItem("zad9gwiazdka", typ);
+      localStorage.setItem("tabela9", typ);
+
+      if (!zdobyta) {
+        let nowe = parseInt(localStorage.getItem("noweGwiazdki")) || 0;
+        localStorage.setItem("noweGwiazdki", nowe + 1);
+      }
+      localStorage.setItem("zad9zdobyta", "true");
+
+      if (zdobyta) {
+        aktywujNagrode();
+      }
+
+      function pokazNagrode() {
+        aktywujNagrode();
+        confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } });
+      }
+
+      function aktywujNagrode() {
+        img.classList.add("kolorowa");
+        napis.textContent = tekst;
+        napis.style.visibility = "visible";
+        napis.style.color = kolor;
+        btn.textContent = "✅ Nagroda odebrana!";
+        btn.classList.add("green");
+        btn.disabled = true;
+        btnPowrot.style.display = "block";
+      }
+
+      function wrocDoZadania() {
+        localStorage.setItem("zad9status", "odebrana");
+        window.location.href = "z-x7n2v-91.html";
+      }
+    </script>
+  </body>
+</html>

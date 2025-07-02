@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        text-align: center;
+        position: relative;
+      }
+      h2 {
+        font-size: 1.6em;
+        margin-bottom: 0.5em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        line-height: 1.3em;
+      }
+      .graphic,
+      .zadanie-img,
+      .okladka-img {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 1em;
+      }
+      .zadanie-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 360px;
+        margin-bottom: 3em;
+      }
+      .zadanie-img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .okladka-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        z-index: 10;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .btn {
+        background: #1d3557;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        width: 100%;
+        max-width: 360px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+      .btn.orange {
+        background: orange;
+        border-color: orange;
+      }
+      .btn.green {
+        background: #28a745;
+        border-color: #28a745;
+      }
+      .btn.red {
+        background: red;
+        border-color: red;
+      }
+      .btn-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 360px;
+        margin-top: 3em;
+        gap: 1em;
+      }
+      .button-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.5em;
+        margin-top: 1em;
+        margin-bottom: 1.5em;
+        width: 100%;
+        max-width: 360px;
+      }
+      .attempt-box {
+        background: #2a2e38;
+        padding: 0.8em;
+        border-radius: 15px;
+        border: 2px solid #50545f;
+        font-weight: bold;
+        width: 100%;
+        max-width: 360px;
+        position: relative;
+        z-index: 2;
+        margin: 1.5em auto;
+      }
+      .stars-info {
+        margin-bottom: 1.5em;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7em;
+      }
+      .star-line {
+        display: flex;
+        align-items: center;
+        gap: 0.7em;
+        font-size: 1em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Znajdź poniżej prawidłowy<br />cień rakiety</h2>
+    <img class="graphic" src="https://imgur.com/7YfsOyK.png" alt="Rakieta" />
+
+    <div class="zadanie-wrapper">
+      <img
+        class="zadanie-img"
+        src="https://imgur.com/0TlVuw1.png"
+        alt="Zadanie"
+      />
+      <img
+        class="okladka-img"
+        id="okladka"
+        src="https://imgur.com/V42MWVz.png"
+        alt="Okładka"
+      />
+    </div>
+
+    <div class="button-grid" id="buttonGrid"></div>
+
+    <div class="btn-row">
+      <button class="btn" id="zatwierdzBtn" disabled>Zatwierdź</button>
+      <button class="btn green" id="startBtn">Start</button>
+      <div class="attempt-box">Ilość prób: <span id="errors">0</span></div>
+      <div class="stars-info">
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg?v=1747875423355"
+            alt="Złota"
+          />
+          <span>- 1 próba</span>
+        </div>
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg?v=1747875426320"
+            alt="Srebrna"
+          />
+          <span>- 2 próby</span>
+        </div>
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg?v=1747875427751"
+            alt="Brązowa"
+          />
+          <span>- 3+ próby</span>
+        </div>
+      </div>
+      <button class="btn" onclick="location.href='z-n5x8r-61.html'">
+        ⬅ Powrót
+      </button>
+    </div>
+
+    <script>
+      const errorsSpan = document.getElementById("errors");
+      const startBtn = document.getElementById("startBtn");
+      const zatwierdzBtn = document.getElementById("zatwierdzBtn");
+      const buttonGrid = document.getElementById("buttonGrid");
+      const okladka = document.getElementById("okladka");
+
+      let errors = parseInt(localStorage.getItem("rakieta_proby")) || 0;
+      let selectedBtn = null;
+      const correctNumber = 6;
+
+      errorsSpan.textContent = errors;
+
+      const overlayHidden = localStorage.getItem("rakieta_okladka") === "true";
+      if (overlayHidden) {
+        okladka.classList.add("hidden");
+        zatwierdzBtn.disabled = false;
+      }
+
+      for (let i = 1; i <= 10; i++) {
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.textContent = i;
+        btn.dataset.number = i;
+        btn.disabled = !overlayHidden;
+        btn.onclick = () => {
+          if (btn.disabled) return;
+          document
+            .querySelectorAll(".button-grid .btn")
+            .forEach((b) => b.classList.remove("orange"));
+          btn.classList.add("orange");
+          selectedBtn = btn;
+        };
+        buttonGrid.appendChild(btn);
+      }
+
+      zatwierdzBtn.addEventListener("click", () => {
+        if (!selectedBtn) return;
+
+        const selectedNumber = parseInt(selectedBtn.dataset.number);
+        const isCorrect = selectedNumber === correctNumber;
+
+        errors++;
+        localStorage.setItem("rakieta_proby", errors);
+        errorsSpan.textContent = errors;
+
+        selectedBtn.classList.remove("orange");
+        selectedBtn.classList.add(isCorrect ? "green" : "red");
+
+        const btnToReset = selectedBtn; // zapamiętaj ten przycisk
+
+        setTimeout(() => {
+          btnToReset.classList.remove("green", "red");
+          if (isCorrect) {
+            window.location.href = "z-p0jtk-63.html";
+          }
+        }, 1000);
+      });
+
+      startBtn.addEventListener("click", () => {
+        okladka.classList.add("hidden");
+        localStorage.setItem("rakieta_okladka", "true");
+        zatwierdzBtn.disabled = false;
+        document.querySelectorAll(".button-grid .btn").forEach((btn) => {
+          btn.disabled = false;
+        });
+      });
+    </script>
+  </body>
+</html>

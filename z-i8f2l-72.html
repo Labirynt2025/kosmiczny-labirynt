@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.6em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        line-height: 1.3em;
+      }
+      .graphic {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 1.5em;
+      }
+      .hint-box {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 15px;
+        padding: 1em;
+        margin-bottom: 1em;
+        border: 2px solid #00d4ff;
+        color: white;
+        background-color: #1d3557;
+        height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      .hint-box.white {
+        background-color: #1d3557;
+        color: white;
+        border-color: white;
+        height: 90px;
+      }
+      .hint-label {
+        color: #00d4ff;
+        font-weight: bold;
+        margin-bottom: 0.3em;
+      }
+      .btn {
+        background: #1d3557;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        width: 100%;
+        max-width: 360px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+      .btn.blue {
+        background: #1d3557;
+        border: 3px solid white;
+      }
+      .btn.apply {
+        height: 58px;
+        padding: 0 1em;
+        max-width: 100px;
+        font-size: 0.95em;
+      }
+      .btn-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 360px;
+        margin-top: 0.5em;
+        gap: 1em;
+      }
+      .attempt-box {
+        background: #2a2e38;
+        padding: 0.8em;
+        border-radius: 15px;
+        border: 2px solid #50545f;
+        font-weight: bold;
+        width: 100%;
+        max-width: 360px;
+        position: relative;
+        z-index: 2;
+        margin: 1.5em auto;
+      }
+      .input-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5em;
+        margin: 1em 0;
+        width: 100%;
+        max-width: 360px;
+      }
+      input[type="text"] {
+        padding: 0.9em;
+        border-radius: 20px;
+        border: 3px solid white;
+        font-size: 1.1em;
+        background-color: #102030;
+        color: white;
+        height: 58px;
+        flex-grow: 1;
+      }
+      input:disabled {
+        opacity: 0.5;
+      }
+      .stars-info {
+        margin-bottom: 1.5em;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7em;
+      }
+      .star-line {
+        display: flex;
+        align-items: center;
+        gap: 0.7em;
+        font-size: 1em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+      .error {
+        color: red;
+        font-weight: bold;
+        height: 2.5em;
+        margin-bottom: 0.5em;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>
+      Rozwiąż kosmiczną zagadkę,<br />wykorzystując jak najmniej podpowiedzi
+    </h2>
+    <img
+      src="https://imgur.com/2rhG3VB.png"
+      alt="Obrazek główny"
+      class="graphic"
+    />
+
+    <div class="hint-box">
+      Widoczny jest z Ziemi wyłącznie nocą<br />Jego kształt i nazwa za nos cię
+      wodzą
+    </div>
+
+    <div class="hint-label">Podpowiedź 1</div>
+    <div class="hint-box white" id="hint1"></div>
+    <div class="hint-label">Podpowiedź 2</div>
+    <div class="hint-box white" id="hint2"></div>
+    <div class="hint-label">Podpowiedź 3</div>
+    <div class="hint-box white" id="hint3"></div>
+
+    <div class="input-group">
+      <input type="text" id="odpowiedz" placeholder="Wpisz odpowiedź" />
+      <button class="btn apply" id="zatwierdz" disabled>Zatwierdź</button>
+    </div>
+    <div id="komunikat" class="error"></div>
+
+    <div class="btn-row">
+      <button class="btn blue" id="startBtn">Podpowiedź</button>
+      <div class="attempt-box">
+        Wykorzystane podpowiedzi: <span id="czas">0</span>
+      </div>
+      <div class="stars-info">
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg?v=1747875423355"
+            alt="Złota"
+          />
+          <span>- 1 podpowiedź</span>
+        </div>
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg?v=1747875426320"
+            alt="Srebrna"
+          />
+          <span>- 2 podpowiedzi</span>
+        </div>
+        <div class="star-line">
+          <img
+            src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg?v=1747875427751"
+            alt="Brązowa"
+          />
+          <span>- 3 podpowiedzi</span>
+        </div>
+      </div>
+      <button class="btn" onclick="location.href='z-xhu8z-71.html'">
+        ⬅ Powrót
+      </button>
+    </div>
+
+    <script>
+      const startBtn = document.getElementById("startBtn");
+      const hint1 = document.getElementById("hint1");
+      const hint2 = document.getElementById("hint2");
+      const hint3 = document.getElementById("hint3");
+      const counter = document.getElementById("czas");
+      const zatwierdz = document.getElementById("zatwierdz");
+      const input = document.getElementById("odpowiedz");
+      const komunikat = document.getElementById("komunikat");
+
+      let currentHint = parseInt(localStorage.getItem("currentHint")) || 0;
+
+      function showHints() {
+        if (currentHint >= 1)
+          hint1.innerHTML =
+            "Zmora to koni, a pomoc strażaków<br>Raczej nie małych jest on rozmiarów";
+        if (currentHint >= 2)
+          hint2.textContent =
+            "Złożony jest z siedmiu obiektów na niebie\nNazwanych jak święto z choinką i śniegiem";
+        if (currentHint >= 3)
+          hint3.textContent =
+            "Zobaczysz je również, gdy na głowie guz\nTeraz już wiesz, że to …… …";
+        if (currentHint >= 3) startBtn.disabled = true;
+        counter.textContent = currentHint;
+      }
+
+      showHints();
+
+      startBtn.addEventListener("click", () => {
+        if (currentHint < 3) {
+          currentHint++;
+          localStorage.setItem("currentHint", currentHint);
+          showHints();
+        }
+      });
+
+      input.addEventListener("input", () => {
+        zatwierdz.disabled = input.value.trim().length === 0;
+        komunikat.textContent = "";
+      });
+
+      zatwierdz.addEventListener("click", () => {
+        const val = input.value.trim().toLowerCase();
+        if (val === "wielki woz" || val === "wielki wóz") {
+          window.location.href = "z-hox8g-73.html";
+        } else {
+          komunikat.textContent = "❌ Niepoprawna odpowiedź";
+        }
+      });
+    </script>
+  </body>
+</html>

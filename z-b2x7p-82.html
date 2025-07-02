@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.6em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+      }
+      .graphic {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 1.5em;
+      }
+      .crossword {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 2em;
+        align-items: flex-start;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+      }
+      .number {
+        color: #00d4ff;
+        font-weight: bold;
+        width: 20px;
+        margin-right: 5px;
+      }
+      .cell {
+        width: 22px;
+        height: 22px;
+        border: 1px solid white;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        background-color: #1d3557;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+      }
+      .cell.vertical {
+        background-color: #ff8c00;
+      }
+      .question-block {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        max-width: 360px;
+        width: 100%;
+        margin-bottom: 2em;
+      }
+      .question-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1em;
+      }
+      .question-line span {
+        flex: 1;
+        text-align: left;
+        color: white;
+        font-weight: bold;
+      }
+      .input-box {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.3em;
+      }
+      .input-box input {
+        padding: 0.4em;
+        border-radius: 12px;
+        border: 2px solid white;
+        font-size: 1em;
+        background-color: #102030;
+        color: white;
+        width: 110px;
+        text-align: center;
+      }
+      .icon-btn {
+        width: 32px;
+        height: 32px;
+        border: 2px solid white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        background-color: #1d3557;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .icon-btn.success {
+        background-color: #28a745;
+        color: white;
+        border-color: #28a745;
+      }
+      .icon-btn.error {
+        background-color: #dc3545;
+        border-color: #dc3545;
+      }
+      .input-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5em;
+        width: 100%;
+        max-width: 360px;
+        margin-bottom: 0.5em;
+      }
+      .input-group input {
+        padding: 0.9em;
+        border-radius: 20px;
+        border: 3px solid white;
+        font-size: 1.1em;
+        background-color: #102030;
+        color: white;
+        height: 58px;
+        flex-grow: 1;
+      }
+      .input-group button {
+        height: 58px;
+        padding: 0 1em;
+        border-radius: 20px;
+        border: 3px solid white;
+        background-color: #1d3557;
+        color: white;
+        font-weight: bold;
+        font-size: 1em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+      }
+      .input-group button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .error-message {
+        color: #ff4d4d;
+        font-weight: bold;
+        height: 1.5em;
+        margin-bottom: 1em;
+      }
+      .attempt-box {
+        background: #2a2e38;
+        padding: 0.8em;
+        border-radius: 20px;
+        border: 2px solid #666;
+        font-weight: bold;
+        width: 100%;
+        max-width: 360px;
+        margin: 2em auto 2em;
+      }
+      .stars-info {
+        margin-bottom: 2em;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7em;
+      }
+      .star-line {
+        display: flex;
+        align-items: center;
+        gap: 0.7em;
+        font-size: 1em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+      .btn.back {
+        width: 100%;
+        max-width: 360px;
+        margin-top: 2em;
+        padding: 1em;
+        border-radius: 20px;
+        border: 3px solid white;
+        background-color: #1d3557;
+        color: white;
+        font-weight: bold;
+        font-size: 1.1em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Rozwiąż krzyżówkę<br />wpisując prawidłowe hasła</h2>
+    <img
+      src="https://imgur.com/FQGQuKD.png"
+      alt="Obrazek główny"
+      class="graphic"
+    />
+    <div class="crossword" id="crossword"></div>
+    <div class="question-block" id="questions"></div>
+
+    <div class="input-group">
+      <input
+        type="text"
+        id="mainAnswer"
+        placeholder="Wpisz hasło główne"
+        oninput="enableSubmit()"
+      />
+      <button id="mainBtn" onclick="checkMainAnswer()" disabled>
+        ZATWIERDŹ
+      </button>
+    </div>
+    <div id="errorMsg" class="error-message"></div>
+    <div class="attempt-box">Odgadnięte hasła: <span id="score">0</span></div>
+
+    <div class="stars-info">
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg?v=1747875423355"
+          alt="Złota"
+        />
+        <span>- 8-9 odgadniętych haseł</span>
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg?v=1747875426320"
+          alt="Srebrna"
+        />
+        <span>- 5-7 odgadniętych haseł</span>
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg?v=1747875427751"
+          alt="Brązowa"
+        />
+        <span>- 0-4 odgadniętych haseł</span>
+      </div>
+    </div>
+    <button class="btn back" onclick="location.href='z-m4r9e-81.html'">
+      ⬅ POWRÓT
+    </button>
+
+    <script>
+      const data = [
+        {
+          id: 1,
+          word: "GRAWITACJA",
+          clue: "Jak inaczej mówimy na przyciąganie ziemskie?",
+          highlight: 0,
+        },
+        {
+          id: 2,
+          word: "SATURN",
+          clue: "Która planeta posiada pierścienie?",
+          highlight: 1,
+        },
+        {
+          id: 3,
+          word: "SATELITA",
+          clue: "Co krąży wokół Ziemi i przesyła dane?",
+          highlight: 4,
+        },
+        {
+          id: 4,
+          word: "NASA",
+          clue: "Jak nazywa się amerykańska agencja kosmiczna?",
+          highlight: 1,
+        },
+        {
+          id: 5,
+          word: "TELESKOP",
+          clue: "Jakim urządzeniem można obserwowac niebo?",
+          highlight: 5,
+        },
+        {
+          id: 6,
+          word: "RAKIETA",
+          clue: "Czym astronauci lecą w kosmos?",
+          highlight: 5,
+        },
+        {
+          id: 7,
+          word: "METEORYT",
+          clue: "Jak nazywa się spadająca gwiazda?",
+          highlight: 6,
+        },
+        {
+          id: 8,
+          word: "ŁAJKA",
+          clue: "Jak miał na imię pierwszy pies w kosmosie?",
+          highlight: 3,
+        },
+        {
+          id: 9,
+          word: "ORBITA",
+          clue: "Jak nazywa się tor, po którym krążą planety?",
+          highlight: 5,
+        },
+      ];
+
+      let correct = 0;
+      const crossword = document.getElementById("crossword");
+      const questions = document.getElementById("questions");
+
+      data.forEach(({ id, word, clue, highlight }) => {
+        const saved = localStorage.getItem("answer-" + id) || "";
+        const isCorrect = saved.toUpperCase() === word;
+
+        if (isCorrect) correct++;
+
+        const row = document.createElement("div");
+        row.className = "row";
+        row.style.marginLeft = (6 - highlight) * 22 + "px";
+
+        const num = document.createElement("div");
+        num.className = "number";
+        num.textContent = id;
+        row.appendChild(num);
+
+        for (let i = 0; i < word.length; i++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.id = `cell-${id}-${i}`;
+          if (i === highlight) cell.classList.add("vertical");
+          if (isCorrect) cell.textContent = word[i];
+          row.appendChild(cell);
+        }
+        crossword.appendChild(row);
+
+        const qRow = document.createElement("div");
+        qRow.className = "question-line";
+        qRow.innerHTML = `
+          <span>${id}. ${clue}</span>
+          <div class="input-box">
+            <input type="text" id="input-${id}" placeholder="Odpowiedź" value="${saved}" />
+            <button class="icon-btn ${
+              isCorrect ? "success" : ""
+            }" id="btn-${id}" onclick="check(${id})">${
+          isCorrect ? "✓" : "➤"
+        }</button>
+          </div>`;
+        questions.appendChild(qRow);
+      });
+
+      document.getElementById("score").textContent = correct;
+      localStorage.setItem("correctCount", correct);
+
+      function check(id) {
+        const input = document.getElementById(`input-${id}`);
+        const btn = document.getElementById(`btn-${id}`);
+        const word = data[id - 1].word.toUpperCase();
+        const userInput = input.value.trim();
+
+        if (userInput.toUpperCase() === word) {
+          for (let i = 0; i < word.length; i++) {
+            document.getElementById(`cell-${id}-${i}`).textContent = word[i];
+          }
+          btn.classList.add("success");
+          btn.innerHTML = "✓";
+          localStorage.setItem("answer-" + id, userInput);
+          correct++;
+          localStorage.setItem("correctCount", correct);
+          document.getElementById("score").textContent = correct;
+        } else {
+          btn.classList.add("error");
+          btn.innerHTML = "✗";
+          setTimeout(() => {
+            btn.classList.remove("error");
+            btn.innerHTML = "➤";
+          }, 1000);
+        }
+      }
+
+      function enableSubmit() {
+        const val = document.getElementById("mainAnswer").value;
+        document.getElementById("mainBtn").disabled = val.trim().length === 0;
+      }
+
+      function checkMainAnswer() {
+        const val = document
+          .getElementById("mainAnswer")
+          .value.trim()
+          .toUpperCase();
+        const errorMsg = document.getElementById("errorMsg");
+        if (val === "GALAKTYKA") {
+          window.location.href = "z-v7k3q-83.html";
+        } else {
+          errorMsg.textContent = "❌ Niepoprawna odpowiedź";
+        }
+      }
+    </script>
+  </body>
+</html>

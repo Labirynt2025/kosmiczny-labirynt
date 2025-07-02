@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.6em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        line-height: 1.3em;
+      }
+      .graphic {
+        width: 90%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 1.5em;
+      }
+      .planet-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        width: 100%;
+        max-width: 360px;
+        margin-bottom: 1.5em;
+      }
+      .planet {
+        background: #ffffff15;
+        border-radius: 12px;
+        padding: 0.8em;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: background 0.3s;
+        font-size: 1.1em;
+        order: 100;
+      }
+      .planet:hover {
+        background: #ffffff25;
+      }
+      .planet img {
+        width: 40px;
+        height: 40px;
+      }
+      .number {
+        background: #0cf;
+        color: black;
+        font-weight: bold;
+        border-radius: 50%;
+        width: 26px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn {
+        background: #1d3557;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        margin: 0.5em 0;
+        width: 100%;
+        max-width: 360px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+      .btn.green {
+        background: #28a745;
+        border-color: #28a745;
+      }
+      .btn.red {
+        background: #e63946;
+        border-color: #e63946;
+      }
+      .btn-row {
+        display: flex;
+        gap: 1em;
+        justify-content: center;
+        max-width: 360px;
+        width: 100%;
+      }
+      #komunikat {
+        min-height: 2em;
+        font-weight: bold;
+        margin-bottom: 1em;
+      }
+      .attempt-box {
+        background: #ffffff10;
+        padding: 0.8em;
+        border-radius: 10px;
+        border: 2px solid #ffffff30;
+        font-weight: bold;
+        margin: 1.5em auto 1em;
+        max-width: 360px;
+        width: 100%;
+      }
+      .stars-info {
+        margin-top: 1em;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7em;
+      }
+      .star-line {
+        display: flex;
+        align-items: center;
+        gap: 0.7em;
+        font-size: 1em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+      .bottom-btn {
+        width: 100%;
+        max-width: 360px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Ułóż planety w odpowiedniej<br />kolejności od słońca</h2>
+    <img
+      src="https://imgur.com/rffrxsp.png"
+      alt="Układ Słoneczny"
+      class="graphic"
+    />
+    <div class="planet-list" id="listaPlanet"></div>
+    <div id="komunikat"></div>
+
+    <div class="btn-row">
+      <button class="btn red" onclick="resetuj(event)">Reset</button>
+      <button class="btn green" id="btnSprawdz" onclick="sprawdz()">
+        Sprawdź
+      </button>
+    </div>
+
+    <div class="attempt-box">Liczba prób: <span id="proby">1</span></div>
+
+    <div class="stars-info">
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg?v=1747875423355"
+          alt="Złota"
+        />
+        - 1 próba
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg?v=1747875426320"
+          alt="Srebrna"
+        />
+        - 2 próby
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg?v=1747875427751"
+          alt="Brązowa"
+        />
+        - 3+ próby
+      </div>
+    </div>
+
+    <div style="margin-top: 2em; width: 100%; max-width: 360px">
+      <button class="btn" onclick="location.href='z-k4n9v-11.html'">
+        ⬅ Powrót
+      </button>
+    </div>
+
+    <script>
+      const planety = [
+        { nazwa: "Merkury", obraz: "https://imgur.com/GusmTF5.png" },
+        { nazwa: "Wenus", obraz: "https://imgur.com/Dn4xEdq.png" },
+        { nazwa: "Ziemia", obraz: "https://imgur.com/8pgadOk.png" },
+        { nazwa: "Mars", obraz: "https://imgur.com/iBVpOcf.png" },
+        { nazwa: "Jowisz", obraz: "https://imgur.com/KD8e2mO.png" },
+        { nazwa: "Saturn", obraz: "https://imgur.com/PDY2ouS.png" },
+        { nazwa: "Uran", obraz: "https://imgur.com/1v0dOVQ.png" },
+        { nazwa: "Neptun", obraz: "https://imgur.com/m83yI1c.png" },
+      ];
+
+      let klikniecia = {};
+      let kolejnosc = [];
+      let proby = parseInt(localStorage.getItem("zad1proby")) || 1;
+
+      const lista = document.getElementById("listaPlanet");
+      const komunikat = document.getElementById("komunikat");
+      const probySpan = document.getElementById("proby");
+
+      window.onload = () => {
+        losujPlanety();
+        probySpan.textContent = proby;
+      };
+
+      function losujPlanety() {
+        lista.innerHTML = "";
+        kolejnosc = [];
+        klikniecia = {};
+        komunikat.textContent = "";
+
+        const pomieszane = [...planety].sort(() => Math.random() - 0.5);
+        pomieszane.forEach((p) => {
+          const div = document.createElement("div");
+          div.className = "planet";
+          div.dataset.nazwa = p.nazwa;
+          div.innerHTML = `<div class="number"></div><img src="${p.obraz}" alt="${p.nazwa}"><span>${p.nazwa}</span>`;
+          div.onclick = () => kliknijPlanete(p.nazwa, div);
+          lista.appendChild(div);
+        });
+      }
+
+      function kliknijPlanete(nazwa, el) {
+        if (klikniecia[nazwa]) {
+          delete klikniecia[nazwa];
+          el.querySelector(".number").textContent = "";
+        } else {
+          klikniecia[nazwa] = Object.keys(klikniecia).length + 1;
+          el.querySelector(".number").textContent = klikniecia[nazwa];
+        }
+
+        kolejnosc = Object.entries(klikniecia)
+          .sort((a, b) => a[1] - b[1])
+          .map((e) => e[0]);
+
+        Array.from(lista.children).forEach((div) => {
+          const name = div.dataset.nazwa;
+          div.style.order = klikniecia[name] || 100;
+        });
+      }
+
+      function resetuj(event) {
+        event.preventDefault();
+        klikniecia = {};
+        kolejnosc = [];
+        komunikat.textContent = "";
+        Array.from(lista.children).forEach((div) => {
+          div.querySelector(".number").textContent = "";
+          div.style.order = 100;
+        });
+      }
+
+      function sprawdz() {
+        const poprawna = [
+          "Merkury",
+          "Wenus",
+          "Ziemia",
+          "Mars",
+          "Jowisz",
+          "Saturn",
+          "Uran",
+          "Neptun",
+        ];
+        if (kolejnosc.join() === poprawna.join()) {
+          localStorage.setItem("zad1proby", proby);
+          window.location.href = "z-9wpfa-13.html";
+        } else {
+          proby++;
+          localStorage.setItem("zad1proby", proby);
+          probySpan.textContent = proby;
+          komunikat.textContent = "❌ Nieprawidłowa kolejność.";
+          komunikat.style.color = "tomato";
+        }
+      }
+    </script>
+  </body>
+</html>

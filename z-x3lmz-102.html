@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <script>
+      if (localStorage.getItem("gra_zakonczona") === "1") {
+        window.location.href = "start.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kosmiczny Labirynt w Kukurydzy</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Baloo 2", cursive;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2em 1em 6em;
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.8em;
+        margin-bottom: 1em;
+        color: #00d4ff;
+        text-shadow: 2px 2px 0 #000;
+        line-height: 1.4em;
+      }
+      .graphic {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        margin-bottom: 1em;
+      }
+      .main-container {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 1em;
+        margin-top: 1em;
+      }
+      .main-box {
+        width: 190px;
+        height: 190px;
+        border: 3px solid #00d4ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background-color: #102030;
+        font-weight: bold;
+        font-size: 2.2em;
+        padding: 0.4em;
+        text-align: center;
+        line-height: 1.2em;
+      }
+      .main-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .score {
+        width: 60px;
+        height: 60px;
+        border: 3px solid white;
+        border-radius: 10px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8em;
+      }
+      .success {
+        border-color: #28a745;
+        color: #28a745;
+      }
+      .fail {
+        border-color: #dc3545;
+        color: #dc3545;
+      }
+      .choices {
+        display: flex;
+        justify-content: center;
+        gap: 1em;
+        margin-top: 1em;
+      }
+      .choice {
+        width: 100px;
+        height: 100px;
+        border: 3px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background-color: transparent;
+      }
+      .choice img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .choice.orange {
+        border-color: orange;
+        box-shadow: 0 0 12px orange;
+      }
+      .choice.green {
+        border-color: limegreen;
+        box-shadow: 0 0 12px limegreen;
+      }
+      .choice.red {
+        border-color: red;
+        box-shadow: 0 0 12px red;
+      }
+      .btn-row {
+        display: flex;
+        justify-content: center;
+        gap: 1em;
+        margin-top: 1em;
+      }
+      .btn {
+        background: #1d3557;
+        border: 3px solid white;
+        border-radius: 20px;
+        color: white;
+        font-size: 1.1em;
+        padding: 1em;
+        width: 160px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+      }
+      .btn.green {
+        background-color: #28a745;
+        border-color: #28a745;
+      }
+      .btn.red {
+        background-color: #dc3545;
+        border-color: #dc3545;
+      }
+      .round-box {
+        background: #2a2e38;
+        padding: 0.8em;
+        border-radius: 20px;
+        border: 2px solid #666;
+        font-weight: bold;
+        width: 340px;
+        margin-top: 1em;
+        text-align: center;
+      }
+      .stars-info {
+        margin-top: 2em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.7em;
+      }
+      .star-line {
+        display: flex;
+        align-items: center;
+        gap: 0.7em;
+        font-size: 1em;
+      }
+      .star-line img {
+        height: 28px;
+      }
+      .back {
+        background-color: #1d3557;
+        border-color: white;
+        margin-top: 2em;
+        width: 340px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>
+      Spróbuj przewidzieć jak największą<br />
+      ilość pojawiających się obrazków
+    </h2>
+    <img src="https://imgur.com/x33Cu90.png" alt="Grafika" class="graphic" />
+    <div class="main-container">
+      <div class="score fail" id="failCount">0</div>
+      <div class="main-box" id="mainBox">
+        <img src="https://imgur.com/xUMlxxQ.png" />
+      </div>
+      <div class="score success" id="successCount">0</div>
+    </div>
+    <div class="choices">
+      <div class="choice" data-index="0">
+        <img src="https://imgur.com/WXaZA5w.png" />
+      </div>
+      <div class="choice" data-index="1">
+        <img src="https://imgur.com/CTM9HNo.png" />
+      </div>
+      <div class="choice" data-index="2">
+        <img src="https://imgur.com/fGEXKpz.png" />
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn red" onclick="resetGame()">RESET</button>
+      <button class="btn green" onclick="startGame()">START</button>
+    </div>
+    <div class="round-box" id="roundDisplay">Liczba rund: 20</div>
+    <div class="stars-info">
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/zlota.svg"
+          alt="Złota"
+        />
+        <span>- 14-20 trafień</span>
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/srebrna.svg"
+          alt="Srebrna"
+        />
+        <span>- 7-13 trafień</span>
+      </div>
+      <div class="star-line">
+        <img
+          src="https://cdn.glitch.global/176f33d0-8cf4-4e1f-8c89-1af3ce19b89e/brazowa.svg"
+          alt="Brązowa"
+        />
+        <span>- 0-6 trafień</span>
+      </div>
+    </div>
+    <button class="btn back" onclick="location.href='z-q9r7t-101.html'">
+      ⬅ POWRÓT
+    </button>
+
+    <script>
+      const images = [
+        "https://imgur.com/WXaZA5w.png",
+        "https://imgur.com/CTM9HNo.png",
+        "https://imgur.com/fGEXKpz.png",
+      ];
+      const mainBox = document.getElementById("mainBox");
+      const successCount = document.getElementById("successCount");
+      const failCount = document.getElementById("failCount");
+      const roundDisplay = document.getElementById("roundDisplay");
+      const choices = document.querySelectorAll(".choice");
+      const totalRounds = 20;
+      let roundsLeft =
+        parseInt(localStorage.getItem("roundsLeft")) || totalRounds;
+      let successes = parseInt(localStorage.getItem("successes")) || 0;
+      let fails = parseInt(localStorage.getItem("fails")) || 0;
+      let gameStarted = false;
+      let waiting = false;
+
+      successCount.textContent = successes;
+      failCount.textContent = fails;
+      roundDisplay.textContent = `Liczba rund: ${roundsLeft}`;
+
+      function startGame() {
+        gameStarted = true;
+        mainBox.innerHTML = "Wybierz<br>obrazek";
+      }
+
+      function resetGame() {
+        roundsLeft = totalRounds;
+        successes = 0;
+        fails = 0;
+        localStorage.setItem("roundsLeft", roundsLeft);
+        localStorage.setItem("successes", successes);
+        localStorage.setItem("fails", fails);
+        updateDisplay();
+        mainBox.innerHTML = `<img src="https://imgur.com/xUMlxxQ.png" />`;
+        gameStarted = false;
+      }
+
+      function updateDisplay() {
+        successCount.textContent = successes;
+        failCount.textContent = fails;
+        roundDisplay.textContent = `Liczba rund: ${roundsLeft}`;
+      }
+
+      choices.forEach((choice, index) => {
+        choice.addEventListener("click", () => {
+          if (!gameStarted || waiting || roundsLeft <= 0) return;
+          waiting = true;
+
+          choices.forEach((c) => (c.className = "choice"));
+          choice.classList.add("orange");
+
+          let randomIndex;
+          const randomChance = Math.random();
+
+          if (randomChance < 0.5) {
+            // 50% szans na trafienie
+            randomIndex = index;
+          } else {
+            // 50% szans na nietrafienie
+            const otherIndexes = [0, 1, 2].filter((i) => i !== index);
+            randomIndex =
+              otherIndexes[Math.floor(Math.random() * otherIndexes.length)];
+          }
+
+          setTimeout(() => {
+            mainBox.innerHTML = `<img src="${images[randomIndex]}" />`;
+
+            setTimeout(() => {
+              const correct = randomIndex === index;
+              choice.classList.remove("orange");
+              choice.classList.add(correct ? "green" : "red");
+
+              if (correct) {
+                successes++;
+                localStorage.setItem("successes", successes);
+              } else {
+                fails++;
+                localStorage.setItem("fails", fails);
+              }
+
+              roundsLeft--;
+              localStorage.setItem("roundsLeft", roundsLeft);
+              updateDisplay();
+
+              setTimeout(() => {
+                choice.className = "choice";
+                mainBox.innerHTML = "Wybierz<br>obrazek";
+                waiting = false;
+                if (roundsLeft === 0) {
+                  location.href = "z-h2v8w-103.html";
+                }
+              }, 1000);
+            }, 1000);
+          }, 500);
+        });
+      });
+    </script>
+  </body>
+</html>
